@@ -1,6 +1,11 @@
 services:
   - mysql:latest
 
+variables:
+  # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
+  MYSQL_DATABASE: arsnova3
+  MYSQL_ROOT_PASSWORD: arsnova3_prototype
+
 test:
   tags:
     - sbt
