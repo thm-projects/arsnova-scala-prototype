@@ -3,6 +3,7 @@ package models.definitions
 import models.{SessionId, UserId, Session}
 import slick.driver.MySQLDriver.api._
 import slick.lifted.ForeignKeyQuery
+import models.User
 
 class SessionsTable(tag: Tag) extends Table[Session](tag, "sessions"){
   def id: Rep[SessionId] = column[SessionId]("id", O.PrimaryKey, O.AutoInc)
