@@ -33,7 +33,8 @@ class SessionApiSpecSpec extends BaseServiceSpec with ScalaFutures {
           "shortTitle" -> JsString(newSessionShortTitle)
         ).toString())
       Post("/session", requestEntity) ~> sessionApi ~> check {
-        response.status should be(StatusCode.int2StatusCode(200))
+        val httpOkCode = 200
+        response.status should be(StatusCode.int2StatusCode(httpOkCode))
         val newSessionId: Future[String] = Unmarshal(response.entity).to[String]
         newSessionId.onSuccess { case id =>
           val newSession = SessionService.findById(id.toLong)

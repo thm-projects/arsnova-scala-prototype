@@ -1,7 +1,6 @@
 package services
 
 import models._
-import slick.collection.heterogeneous.Zero.+
 import slick.driver.MySQLDriver.api._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global

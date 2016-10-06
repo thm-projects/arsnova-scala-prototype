@@ -15,7 +15,7 @@ object QuestionJsonProtocol extends DefaultJsonProtocol {
       case Flashcard(_, _, _, _, _, "flashcard", _) => q.asInstanceOf[Flashcard].toJson
       case ChoiceQuestion(_, _, _, _, _, _, _) => q.asInstanceOf[ChoiceQuestion].toJson
     }
-    def read(json: JsValue) = {
+    def read(json: JsValue): Question = {
       json.asJsObject.getFields(
         "format"
       ) match {
