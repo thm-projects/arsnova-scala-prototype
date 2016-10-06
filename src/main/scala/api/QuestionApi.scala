@@ -30,7 +30,7 @@ trait QuestionApi {
     pathPrefix(IntNumber) { id =>
       pathEndOrSingleSlash {
         get {
-          complete (QuestionService.getById(id))
+          complete (QuestionService.findById(id))
         } ~
         put {
           entity(as[Question]) { question =>
