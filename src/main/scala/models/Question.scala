@@ -13,8 +13,12 @@ trait Question {
   val answerOptions: Seq[AnswerOption]
 }*/
 
-case class Freetext(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String, format: String) extends Question
-case class Flashcard(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String, format: String, backside: String) extends Question
-//case class MC(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String, format: String, answerOptions: Seq[AnswerOption], hasCorrectAnswer: Boolean) extends Question with ChoiceQuestion
+case class Freetext(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String,
+                    format: String) extends Question
+case class Flashcard(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String,
+                     format: String, backside: String) extends Question
+//case class MC(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String,
+// format: String, answerOptions: Seq[AnswerOption], hasCorrectAnswer: Boolean) extends Question with ChoiceQuestion
 
-case class ChoiceQuestion(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String, variant: String, format: String, answerOptions: Seq[AnswerOption]) extends Question
+case class ChoiceQuestion(id: Option[QuestionId], sessionId: SessionId, subject: String, content: String,
+                          variant: String, format: String, answerOptions: Seq[AnswerOption]) extends Question

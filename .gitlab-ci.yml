@@ -6,6 +6,13 @@ variables:
   MYSQL_DATABASE: arsnova3
   MYSQL_ROOT_PASSWORD: arsnova3_prototype
 
+stylecheck:
+  tags:
+    - sbt
+  script:
+    - sbt scalastyle
+    - sbt test:scalastyle
+
 test:
   tags:
     - sbt

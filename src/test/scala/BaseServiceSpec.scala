@@ -30,21 +30,27 @@ trait BaseServiceSpec extends WordSpec with Matchers with ScalatestRouteTest wit
     Session(Some(3), "33333333", 2, "session3", "s3")
   )
 
+  val questionId = 5
+  val pointsForRightAnswer: Int = 10
+  val pointsForWrongAnswer: Int = -10
+  val FOUR = 4
+  val FIVE = 5
+
 
   val testAnswerOptions = Seq(
-    AnswerOption(Some(1), 5, true, "rightAnswer1", 10),
-    AnswerOption(Some(2), 5, true, "rightAnswer2", 10),
-    AnswerOption(Some(3), 5, false, "falseAnswer1", -10),
-    AnswerOption(Some(4), 5, false, "falseAnswer2", -10),
-    AnswerOption(Some(5), 5, false, "falseAnswer3", -10)
+    AnswerOption(Some(1), questionId, true, "rightAnswer1", pointsForRightAnswer),
+    AnswerOption(Some(2), questionId, true, "rightAnswer2", pointsForRightAnswer),
+    AnswerOption(Some(3), questionId, false, "falseAnswer1", pointsForWrongAnswer),
+    AnswerOption(Some(FOUR), questionId, false, "falseAnswer2", pointsForWrongAnswer),
+    AnswerOption(Some(FIVE), questionId, false, "falseAnswer3", pointsForWrongAnswer)
   )
 
   val testQuestions = Seq(
     Freetext(Some(1), 1, "subject1", "content1", "preparation", "freetext"),
     Freetext(Some(2), 1, "subject2", "content2", "preparation", "freetext"),
     Flashcard(Some(3), 1, "subject3", "content3", "preparation", "flashcard", "backside3"),
-    Flashcard(Some(4), 1, "subject4", "content4", "preparation", "flashcard", "backside4"),
-    ChoiceQuestion(Some(5), 1, "subject5", "content5", "preparation", "mc", testAnswerOptions)
+    Flashcard(Some(FOUR), 1, "subject4", "content4", "preparation", "flashcard", "backside4"),
+    ChoiceQuestion(Some(FIVE), 1, "subject5", "content5", "preparation", "mc", testAnswerOptions)
   )
 
   val testFreetextAnswers = Seq(
@@ -54,11 +60,11 @@ trait BaseServiceSpec extends WordSpec with Matchers with ScalatestRouteTest wit
   )
 
   val testChoiceAnswers = Seq(
-    ChoiceAnswer(Some(1), 5, 1, 1),
-    ChoiceAnswer(Some(2), 5, 1, 2),
-    ChoiceAnswer(Some(3), 5, 1, 3),
-    ChoiceAnswer(Some(4), 5, 1, 3),
-    ChoiceAnswer(Some(5), 5, 1, 4)
+    ChoiceAnswer(Some(1), questionId, 1, 1),
+    ChoiceAnswer(Some(2), questionId, 1, 2),
+    ChoiceAnswer(Some(3), questionId, 1, 3),
+    ChoiceAnswer(Some(FOUR), questionId, 1, 3),
+    ChoiceAnswer(Some(FIVE), questionId, 1, FOUR)
   )
 
   reloadSchema()
