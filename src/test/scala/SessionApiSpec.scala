@@ -8,8 +8,9 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import scala.concurrent.Future
+import akka.http.scaladsl.model.StatusCodes._
 
-class SessionApiSpecSpec extends BaseServiceSpec with ScalaFutures {
+class SessionApiSpec extends BaseServiceSpec with ScalaFutures {
   import mappings.SessionJsonProtocol._
   "Session api" should {
     "retrieve sessions for user 1" in {
@@ -27,45 +28,45 @@ class SessionApiSpecSpec extends BaseServiceSpec with ScalaFutures {
       val newSessionShortTitle = "newShortTitle"
       val requestEntity = HttpEntity(MediaTypes.`application/json`,
         JsObject(
-          "key" -> JsString("44444444"),
+          "key" -> JsString("55555555"),
           "userId" -> JsNumber(testUsers.head.id.get),
           "title" -> JsString(newSessionTitle),
           "shortTitle" -> JsString(newSessionShortTitle)
         ).toString())
       Post("/session", requestEntity) ~> sessionApi ~> check {
-        val httpOkCode = 200
-        response.status should be(StatusCode.int2StatusCode(httpOkCode))
+        response.status should be(OK)
         val newSessionId: Future[String] = Unmarshal(response.entity).to[String]
         newSessionId.onSuccess { case id =>
-          val newSession = SessionService.findById(id.toLong)
-          newSession.onSuccess {
-            case session => session.title should be(newSessionTitle)
+          Get("/session/" + id.toString) ~> sessionApi ~> check {
+            responseAs[JsObject].asInstanceOf[Session].title should be(JsString(newSessionTitle))
           }
         }
       }
     }
-    /*"update comment by id" in {
-      val newContent = "UpdatedContent"
-      val requestEntity = HttpEntity(MediaTypes.`application/json`,
-        JsObject(
-          "postId" -> JsNumber(testPosts.head.id.get),
-          "userId" -> JsNumber(testUsers.head.id.get),
-          "content" -> JsString(newContent)
-        ).toString())
-      Put("/users/1/posts/1/comments/1", requestEntity) ~> commentsApi ~> check {
-        response.status should be(StatusCode.int2StatusCode(200))
-        whenReady(CommentsDao.findById(1,1, 1)) { result =>
-          result.content should be(newContent)
+    "update session by id" in {
+      val updatedTitle = "UpdatedTitle"
+      val session = testSessions.head
+      val updatedSession = session.copy(title = updatedTitle)
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, updatedSession.toJson.toString)
+      Put("/session/" + session.id.get.toString, requestEntity) ~> sessionApi ~> check {
+        response.status should be(OK)
+        Get("/session/" + session.id.get.toString) ~> sessionApi ~> check {
+          val checkSession: Future[Session] = Unmarshal(response.entity).to[Session]
+          println(response.toString)
+          checkSession.onSuccess { case session =>
+            session should be(updatedSession)
+          }
         }
       }
     }
     "delete comment by id" in {
-      Delete("/comments/1") ~> commentsApi ~> check {
-        response.status should be(StatusCode.int2StatusCode(200))
-        Get("/users/1/posts/1/comments") ~> commentsApi ~> check {
-          responseAs[Seq[Comment]] should have length 1
+      val userSessionId = testSessionsForUser2.head.id.get
+      Delete("/session/" + userSessionId.toString) ~> sessionApi ~> check {
+        response.status should be(OK)
+        Get("/session/?user=2") ~> sessionApi ~> check {
+          responseAs[Seq[Session]] should have length 1
         }
       }
-    }*/
+    }
   }
 }

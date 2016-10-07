@@ -14,6 +14,8 @@ trait BaseServiceSpec extends WordSpec with Matchers with ScalatestRouteTest wit
   protected val log: LoggingAdapter = NoLogging
 
   import driver.api._
+  val FOUR = 4
+  val FIVE = 5
 
   val testUsers = Seq(
     User(Some(1), "user1", "password1"),
@@ -26,15 +28,16 @@ trait BaseServiceSpec extends WordSpec with Matchers with ScalatestRouteTest wit
     Session(Some(2), "22222222", 1, "session2", "s2")
   )
 
-  val testSessions = testSessionsForUser1 ++ Seq(
-    Session(Some(3), "33333333", 2, "session3", "s3")
+  val testSessionsForUser2 = Seq(
+    Session(Some(3), "33333333", 2, "session3", "s3"),
+    Session(Some(FOUR), "44444444", 2, "session4", "s4")
   )
+
+  val testSessions = testSessionsForUser1 ++ testSessionsForUser2
 
   val questionId = 5
   val pointsForRightAnswer: Int = 10
   val pointsForWrongAnswer: Int = -10
-  val FOUR = 4
-  val FIVE = 5
 
 
   val testAnswerOptions = Seq(
