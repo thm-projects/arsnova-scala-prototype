@@ -59,7 +59,7 @@ class SessionApiSpec extends BaseServiceSpec with ScalaFutures {
         }
       }
     }
-    "delete comment by id" in {
+    "delete session by id" in {
       val userSessionId = testSessionsForUser2.head.id.get
       Delete("/session/" + userSessionId.toString) ~> sessionApi ~> check {
         response.status should be(OK)
