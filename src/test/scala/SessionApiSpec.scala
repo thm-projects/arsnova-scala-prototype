@@ -14,6 +14,7 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.Matchers
 import services.BaseService
 import org.scalatest._
+import akka.http.scaladsl.server.MissingQueryParamRejection
 
 trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
   import mappings.SessionJsonProtocol._
@@ -26,6 +27,15 @@ trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseSe
     it("retrieve session by id") {
       Get("/session/1/") ~> sessionApi ~> check {
         responseAs[JsObject] should be(testSessions.head.toJson)
+      }
+    }
+    it("should deny invalid route") {
+      Get("/session/") ~> sessionApi ~> check {
+        handled shouldBe false
+        rejection shouldBe MissingQueryParamRejection("user")
+      }
+      Get("/session/einself") ~> sessionApi ~> check {
+        handled shouldBe false
       }
     }
     it("create session properly") {

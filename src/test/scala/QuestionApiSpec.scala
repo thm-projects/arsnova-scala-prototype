@@ -10,6 +10,7 @@ import akka.http.scaladsl.server.Directives._
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import akka.http.scaladsl.server.MissingQueryParamRejection
 import org.scalatest.{FunSpec, Matchers}
 
 trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
@@ -40,6 +41,12 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         question.onSuccess { case q =>
           q should be(preparationQuestions)
         }*/
+      }
+    }
+    it("should deny invalid route") {
+      Get("/question/") ~> questionApi ~> check {
+        handled shouldBe false
+        rejection shouldBe MissingQueryParamRejection("sessionid")
       }
     }
     it("create freetext question properly") {
@@ -92,7 +99,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         }
       }
     }
-    /*"create mc question properly" in {
+    it("should create mc question properly") {
       val sessionId = 1
       val subject = "postSubject"
       val content = "postContent"
@@ -111,35 +118,34 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         val newQuestionId: Future[String] = Unmarshal(response.entity).to[String]
         newQuestionId.onSuccess { case id =>
           Get("/question/" + id.toString) ~> questionApi ~> check {
-            responseAs[JsObject].asInstanceOf[Freetext].subject should be(JsString(subject))
+            responseAs[JsObject].asInstanceOf[Question].subject should be(JsString(subject))
           }
         }
       }
     }
-    "update session by id" in {
-      val updatedTitle = "UpdatedTitle"
-      val session = testSessions.head
-      val updatedSession = session.copy(title = updatedTitle)
-      val requestEntity = HttpEntity(MediaTypes.`application/json`, updatedSession.toJson.toString)
-      Put("/session/" + session.id.get.toString, requestEntity) ~> sessionApi ~> check {
+    it("should update a question by id") {
+      val updatedSubject = "UpdatedSubject"
+      val question: Freetext = testQuestions.head.asInstanceOf[Freetext]
+      val updatedQuestion: Freetext = question.copy(subject = updatedSubject)
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, updatedQuestion.asInstanceOf[Question].toJson.toString)
+      Put("/question/" + question.id.get.toString, requestEntity) ~> questionApi ~> check {
         response.status should be(OK)
-        Get("/session/" + session.id.get.toString) ~> sessionApi ~> check {
-          val checkSession: Future[Session] = Unmarshal(response.entity).to[Session]
-          println(response.toString)
-          checkSession.onSuccess { case session =>
-            session should be(updatedSession)
+        Get("/question/" + question.id.get.toString) ~> questionApi ~> check {
+          val checkQuestion: Future[Question] = Unmarshal(response.entity).to[Question]
+          checkQuestion.onSuccess { case question =>
+            question should be(updatedQuestion)
           }
         }
       }
     }
-    "delete session by id" in {
-      val userSessionId = testSessionsForUser2.head.id.get
-      Delete("/session/" + userSessionId.toString) ~> sessionApi ~> check {
+    it("should delete session by id") {
+      val questionId = testQuestions.last.id.get
+      Delete("/question/" + questionId.toString) ~> questionApi ~> check {
         response.status should be(OK)
-        Get("/session/?user=2") ~> sessionApi ~> check {
-          responseAs[Seq[Session]] should have length 1
+        Get("/question/" + questionId.toString) ~> questionApi ~> check {
+          response.status should be(NotFound)
         }
       }
-    }*/
+    }
   }
 }
