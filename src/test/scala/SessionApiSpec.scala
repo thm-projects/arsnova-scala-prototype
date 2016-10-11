@@ -1,5 +1,5 @@
-import akka.http.scaladsl.model.{StatusCode, MediaTypes, HttpEntity}
-import services.SessionService
+import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCode}
+import services.{BaseService, SessionService}
 import models._
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
@@ -7,23 +7,28 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import models._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
+
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.scalatest.Matchers
+import services.BaseService
+import org.scalatest._
 
-class SessionApiSpec extends BaseServiceSpec with ScalaFutures {
+trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
   import mappings.SessionJsonProtocol._
-  "Session api" should {
-    "retrieve sessions for user 1" in {
+  describe("Session api") {
+    it("retrieve sessions for user 1") {
       Get("/session/?user=1") ~> sessionApi ~> check {
         responseAs[JsArray] should be(testSessionsForUser1.toJson)
       }
     }
-    "retrieve session by id" in {
+    it("retrieve session by id") {
       Get("/session/1/") ~> sessionApi ~> check {
         responseAs[JsObject] should be(testSessions.head.toJson)
       }
     }
-    "create session properly" in {
+    it("create session properly") {
       val newSessionTitle = "newTitle"
       val newSessionShortTitle = "newShortTitle"
       val requestEntity = HttpEntity(MediaTypes.`application/json`,
@@ -38,12 +43,15 @@ class SessionApiSpec extends BaseServiceSpec with ScalaFutures {
         val newSessionId: Future[String] = Unmarshal(response.entity).to[String]
         newSessionId.onSuccess { case id =>
           Get("/session/" + id.toString) ~> sessionApi ~> check {
-            responseAs[JsObject].asInstanceOf[Session].title should be(JsString(newSessionTitle))
+            val checkSession: Future[Session] = Unmarshal(response.entity).to[Session]
+            checkSession.onSuccess { case session =>
+              session.title should be(newSessionTitle)
+            }
           }
         }
       }
     }
-    "update session by id" in {
+    it("update session by id") {
       val updatedTitle = "UpdatedTitle"
       val session = testSessions.head
       val updatedSession = session.copy(title = updatedTitle)
@@ -52,14 +60,13 @@ class SessionApiSpec extends BaseServiceSpec with ScalaFutures {
         response.status should be(OK)
         Get("/session/" + session.id.get.toString) ~> sessionApi ~> check {
           val checkSession: Future[Session] = Unmarshal(response.entity).to[Session]
-          println(response.toString)
           checkSession.onSuccess { case session =>
             session should be(updatedSession)
           }
         }
       }
     }
-    "delete session by id" in {
+    it("delete session by id") {
       val userSessionId = testSessionsForUser2.head.id.get
       Delete("/session/" + userSessionId.toString) ~> sessionApi ~> check {
         response.status should be(OK)
