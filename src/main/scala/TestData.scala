@@ -29,14 +29,14 @@ trait TestData extends BaseService {
     questionsTable += ChoiceQuestion(None, 1, "subject5", "Last but not least", "lecture", "mc", Nil),
     questionsTable += ChoiceQuestion(None, 1, "subject1", "First Question on second session", "lecture", "mc", Nil),
 
-    answerOptionsTable += AnswerOption(None, answerOptionId1, true, "FirstAnswerOption", pointsForRightAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, false, "FirstAnswerOption", pointsForWrongAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, false, "FirstAnswerOption", pointsForWrongAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, false, "FirstAnswerOption", pointsForWrongAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, true, "FirstAnswerOption", pointsForRightAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, false, "FirstAnswerOption", pointsForWrongAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, false, "FirstAnswerOption", pointsForWrongAnswer),
-    answerOptionsTable += AnswerOption(None, answerOptionId1, true, "FirstAnswerOption", pointsForRightAnswer)
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), true, "FirstAnswerOption", pointsForRightAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), false, "FirstAnswerOption", pointsForWrongAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), false, "FirstAnswerOption", pointsForWrongAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), false, "FirstAnswerOption", pointsForWrongAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), true, "FirstAnswerOption", pointsForRightAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), false, "FirstAnswerOption", pointsForWrongAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), false, "FirstAnswerOption", pointsForWrongAnswer),
+    answerOptionsTable += AnswerOption(None, Some(answerOptionId1), true, "FirstAnswerOption", pointsForRightAnswer)
 
   )
   def populateDB: Unit = {
