@@ -15,7 +15,6 @@ trait QuestionApi {
     pathEndOrSingleSlash {
       get {
         parameters("sessionid".as[SessionId], "variant".?) { (sessionId, variant) =>
-          complete(variant.toString)
           variant match {
             case Some(v) => complete(QuestionService.findQuestionsBySessionIdAndVariant(sessionId, v))
             case None => complete {QuestionService.findAllBySessionId(sessionId)}
