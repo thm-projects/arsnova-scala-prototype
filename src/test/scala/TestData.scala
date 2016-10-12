@@ -52,11 +52,13 @@ trait TestData {
 
   val testQuestions = preparationQuestions ++ liveQuestions
 
-  val testFreetextAnswers = Seq(
+  val testFreetextAnswersForQuestionOne = Seq(
     FreetextAnswer(Some(1), 1, 1, "freetextAnswer1", "freetextText1"),
-    FreetextAnswer(Some(2), 1, 1, "freetextAnswer2", "freetextText2"),
-    FreetextAnswer(Some(3), 2, 1, "freetextAnswer3", "freetextText3")
+    FreetextAnswer(Some(2), 1, 1, "freetextAnswer2", "freetextText2")
   )
+
+  val testFreetextAnswers = testFreetextAnswersForQuestionOne ++
+    Seq(FreetextAnswer(Some(3), 2, 1, "freetextAnswer3", "freetextText3"))
 
   val testChoiceAnswers = Seq(
     ChoiceAnswer(Some(1), questionId, 1, 1),
