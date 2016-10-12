@@ -67,5 +67,16 @@ trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with B
         }
       }
     }
+
+    // last test
+    it("delete all choice answers by questionid") {
+      val questionId = testChoiceAnswers.head.questionId
+      Delete("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
+        response.status should be(OK)
+        Get("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
+          responseAs[JsArray] should be(JsArray())
+        }
+      }
+    }
   }
 }

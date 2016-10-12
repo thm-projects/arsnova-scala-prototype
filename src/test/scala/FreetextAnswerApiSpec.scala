@@ -70,5 +70,16 @@ trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with
         }
       }
     }
+
+    // last test
+    it("delete all freetext answers by questionid") {
+      val questionId = testFreetextAnswersForQuestionOne.head.questionId
+      Delete("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
+        response.status should be(OK)
+        Get("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
+          responseAs[JsArray] should be(JsArray())
+        }
+      }
+    }
   }
 }
