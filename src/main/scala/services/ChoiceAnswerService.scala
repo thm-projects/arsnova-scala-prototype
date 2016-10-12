@@ -2,6 +2,7 @@ package services
 
 import models._
 import slick.driver.MySQLDriver.api._
+
 import scala.concurrent.Future
 
 object ChoiceAnswerService extends BaseService {
@@ -22,5 +23,9 @@ object ChoiceAnswerService extends BaseService {
 
   def delete(choiceAnswerId: ChoiceAnswerId): Future[Int] = {
     choiceAnswersTable.filter(_.id === choiceAnswerId).delete
+  }
+
+  def deleteAllByQuestionId(questionId: QuestionId): Future[Int] = {
+    choiceAnswersTable.filter(_.questionId === questionId).delete
   }
 }

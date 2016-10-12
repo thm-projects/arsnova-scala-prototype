@@ -25,4 +25,8 @@ object FreetextAnswerService extends BaseService {
   def delete(freetextAnswerId: FreetextAnswerId): Future[Int] = {
     freetextAnswersTable.filter(_.id === freetextAnswerId).delete
   }
+
+  def deleteAllByQuestionId(questionId: QuestionId): Future[Int] = {
+    freetextAnswersTable.filter(_.questionId === questionId).delete
+  }
 }
