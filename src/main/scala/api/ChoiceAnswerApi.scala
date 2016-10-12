@@ -1,6 +1,6 @@
 package api
 
-import services.AnswerService
+import services.ChoiceAnswerService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -15,9 +15,27 @@ trait ChoiceAnswerApi {
     pathPrefix(IntNumber) { id =>
       pathPrefix("choiceAnswer") {
         pathEndOrSingleSlash {
+          get {
+            complete (ChoiceAnswerService.getByQuestionId(id))
+          } ~
           post {
             entity(as[ChoiceAnswer]) { answer =>
-              complete (AnswerService.createChoiceAnswer(answer).map(_.toJson))
+              complete (ChoiceAnswerService.create(answer).map(_.toJson))
+            }
+          }
+        } ~
+        pathPrefix(IntNumber) { choiceAnswerId =>
+          pathEndOrSingleSlash {
+            get {
+              complete (ChoiceAnswerService.getById(choiceAnswerId))
+            } ~
+            put {
+              entity(as[ChoiceAnswer]) { choiceAnswer =>
+                complete (ChoiceAnswerService.update(choiceAnswer).map(_.toJson))
+              }
+            } ~
+            delete {
+              complete (ChoiceAnswerService.delete(choiceAnswerId).map(_.toJson))
             }
           }
         }
