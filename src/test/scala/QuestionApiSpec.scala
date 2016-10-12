@@ -8,6 +8,7 @@ import spray.json._
 import akka.http.scaladsl.server.Directives._
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.server.MissingQueryParamRejection
@@ -22,25 +23,22 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         responseAs[JsObject] should be(testQuestions.head.asInstanceOf[Question].toJson)
       }
     }
+    it("retrieve all questions for session with id 1") {
+      Get("/question/?sessionid=1") ~> questionApi ~> check {
+        val questionsJson = testQuestions.asInstanceOf[Seq[Question]].toJson
+        responseAs[JsArray] should be(questionsJson)
+      }
+    }
     it("retrieve preparation questions for session with id 1") {
       Get("/question/?sessionid=1&variant=preparation") ~> questionApi ~> check {
-        /*val question = Unmarshal(response.entity).to[Seq[Question]]
-        question.onSuccess { case q =>
-          q should be(preparationQuestions)
-        }*/
-        val prepQuestionsJson = preparationQuestions.map(_.asInstanceOf[Question].toJson)
+        val prepQuestionsJson = preparationQuestions.asInstanceOf[Seq[Question]].toJson
         responseAs[JsArray] should be(prepQuestionsJson)
-        //responseAs[JsArray] should be(preparationQuestions.asInstanceOf[Seq[Question]].toJson)
       }
     }
     it("retrieve live questions for session with id 1") {
       Get("/question/?sessionid=1&variant=live") ~> questionApi ~> check {
-        val liveQuestionsJson = liveQuestions.map(_.asInstanceOf[Question].toJson)
+        val liveQuestionsJson = liveQuestions.asInstanceOf[Seq[Question]].toJson
         responseAs[JsArray] should be(liveQuestionsJson)
-        /*val question = Unmarshal(response.entity).to[Question]
-        question.onSuccess { case q =>
-          q should be(preparationQuestions)
-        }*/
       }
     }
     it("should deny invalid route") {
@@ -131,9 +129,10 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       Put("/question/" + question.id.get.toString, requestEntity) ~> questionApi ~> check {
         response.status should be(OK)
         Get("/question/" + question.id.get.toString) ~> questionApi ~> check {
-          val checkQuestion: Future[Question] = Unmarshal(response.entity).to[Question]
-          checkQuestion.onSuccess { case question =>
-            question should be(updatedQuestion)
+          val checkQuestionFuture: Future[Question] = Unmarshal(response.entity).to[Question]
+          checkQuestionFuture.onComplete {
+            case Success(checkQuestion) => checkQuestion should be(updatedQuestion)
+            case Failure(t) => fail("couldn't get updated question with error: " + t)
           }
         }
       }
