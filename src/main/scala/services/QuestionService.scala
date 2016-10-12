@@ -37,8 +37,19 @@ object QuestionService extends BaseService {
       }
     ).flatMap(identity)
   }
-  def create(newQuestion: Question): Future[QuestionId] = questionsTable returning questionsTable
-    .map(_.id) += newQuestion
+  def create(newQuestion: Question): Future[QuestionId] = {
+    newQuestion match {
+      case ChoiceQuestion(_, _, _, _, _, _, answerOptions) => {
+        (db.run(questionsTable returning questionsTable.map(_.id) += newQuestion)).map(
+          qId => {
+            val answerOptionsWithQId = answerOptions.map(_.copy(questionId = Some(qId)))
+            AnswerOptionService.create(answerOptionsWithQId)
+            qId
+          })
+        }
+      case _ => questionsTable returning questionsTable.map(_.id) += newQuestion
+    }
+  }
   def update(question: Question, questionId: QuestionId): Future[Int] = questionsTable.filter(_.id ===  questionId)
     .map(q => (q.subject, q.content))
     .update(question.subject, question.content)

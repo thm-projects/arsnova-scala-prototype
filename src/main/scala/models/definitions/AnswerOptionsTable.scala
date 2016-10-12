@@ -12,7 +12,7 @@ class AnswerOptionsTable(tag: Tag) extends Table[AnswerOption](tag, "answer_opti
   def text: Rep[String] = column[String]("content")
   def value: Rep[Int] = column[Int]("points")
 
-  def * = (id.?, questionId, correct, text, value) <> ((AnswerOption.apply _).tupled, AnswerOption.unapply)
+  def * = (id.?, questionId.?, correct, text, value) <> ((AnswerOption.apply _).tupled, AnswerOption.unapply)
 
   def question: ForeignKeyQuery[QuestionsTable, Question] = foreignKey("answer_option_question_fk", questionId, TableQuery[QuestionsTable])(_.id)
 }
