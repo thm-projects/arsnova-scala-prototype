@@ -48,51 +48,40 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       }
     }
     it("create freetext question properly") {
-      val sessionId = 1
+      val sessionId: SessionId = 1
       val subject = "postSubject"
       val content = "postContent"
       val variant = "preparation"
       val format = "freetext"
-      val requestEntity = HttpEntity(MediaTypes.`application/json`,
-        JsObject(
-          "sessionId" -> JsNumber(sessionId),
-          "subject" -> JsString(subject),
-          "content" -> JsString(content),
-          "variant" -> JsString(variant),
-          "format" -> JsString(format)
-        ).toString())
+      val newFreetext = Freetext(None, sessionId, subject, content, variant, format)
+      val requestEntity = HttpEntity(MediaTypes.`application/json`,newFreetext.asInstanceOf[Question].toJson.toString)
       Post("/question", requestEntity) ~> questionApi ~> check {
         response.status should be(OK)
         val newQuestionId: Future[String] = Unmarshal(response.entity).to[String]
-        newQuestionId.onSuccess { case id =>
-          Get("/question/" + id.toString) ~> questionApi ~> check {
-            //responseAs[JsObject].asInstanceOf[Freetext].subject should be(JsString(subject))
+        newQuestionId.onSuccess { case newId =>
+          val checkFreetext = newFreetext.copy(id = Some(newId.toLong))
+          Get("/question/" + newId.toString) ~> questionApi ~> check {
+            responseAs[JsObject] should be(checkFreetext.asInstanceOf[Question].toJson)
           }
         }
       }
     }
     it("create flashcard question properly") {
-      val sessionId = 1
+      val sessionId: SessionId = 1
       val subject = "postSubject"
       val content = "postContent"
       val variant = "preparation"
       val format = "flashcard"
       val backside = "backside"
-      val requestEntity = HttpEntity(MediaTypes.`application/json`,
-        JsObject(
-          "sessionId" -> JsNumber(sessionId),
-          "subject" -> JsString(subject),
-          "content" -> JsString(content),
-          "variant" -> JsString(variant),
-          "format" -> JsString(format),
-          "backside" -> JsString(backside)
-        ).toString())
+      val newFlashcard = Flashcard(None, sessionId, subject, content, variant, format, backside)
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, newFlashcard.asInstanceOf[Question].toJson.toString)
       Post("/question", requestEntity) ~> questionApi ~> check {
         response.status should be(OK)
         val newQuestionId: Future[String] = Unmarshal(response.entity).to[String]
-        newQuestionId.onSuccess { case id =>
-          Get("/question/" + id.toString) ~> questionApi ~> check {
-            //responseAs[JsObject].asInstanceOf[Flashcard].subject should be(JsString(subject))
+        newQuestionId.onSuccess { case newId =>
+          val checkFlashcard = newFlashcard.copy(id = Some(newId.toLong))
+          Get("/question/" + newId) ~> questionApi ~> check {
+            responseAs[JsObject] should be(checkFlashcard.asInstanceOf[Question].toJson)
           }
         }
       }
@@ -103,20 +92,26 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       val content = "postContent"
       val variant = "preparation"
       val format = "mc"
-      val requestEntity = HttpEntity(MediaTypes.`application/json`,
-        JsObject(
-          "sessionId" -> JsNumber(sessionId),
-          "subject" -> JsString(subject),
-          "content" -> JsString(content),
-          "variant" -> JsString(variant),
-          "format" -> JsString(format)
-        ).toString())
+      val answerOptions = Seq(AnswerOption(None, None, false, "false", -1), AnswerOption(None, None, true, "true", 1))
+      val newMC = ChoiceQuestion(None, sessionId, subject, content, variant, format, answerOptions)
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, newMC.asInstanceOf[Question].toJson.toString)
       Post("/question", requestEntity) ~> questionApi ~> check {
         response.status should be(OK)
         val newQuestionId: Future[String] = Unmarshal(response.entity).to[String]
-        newQuestionId.onSuccess { case id =>
-          Get("/question/" + id.toString) ~> questionApi ~> check {
-            responseAs[JsObject].asInstanceOf[Question].subject should be(JsString(subject))
+        newQuestionId.onSuccess { case newId =>
+          Get("/question/" + newId) ~> questionApi ~> check {
+            // can't check question due to answerOptions (don't have ids)
+            val checkQuestionFuture = Unmarshal(response.entity).to[Question]
+            checkQuestionFuture.onComplete {
+              case Success(checkQuestion) => {
+                val checkAnswerOptions = checkQuestion.asInstanceOf[ChoiceQuestion].answerOptions
+                checkAnswerOptions.length should be(answerOptions.length)
+                checkAnswerOptions.map(_.questionId should be(Some(newId.toLong)))
+                val questionWithoutAnswerOptions = checkQuestion.asInstanceOf[ChoiceQuestion].copy(answerOptions = Seq())
+                val postedQuestionWithoutAnswerOptions = newMC.copy(answerOptions = Seq(), id = Some(newId.toLong))
+                questionWithoutAnswerOptions should be(postedQuestionWithoutAnswerOptions)
+              }
+            }
           }
         }
       }

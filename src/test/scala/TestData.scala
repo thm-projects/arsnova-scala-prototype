@@ -30,11 +30,11 @@ trait TestData {
 
 
   val testAnswerOptions = Seq(
-    AnswerOption(Some(1), questionId, true, "rightAnswer1", pointsForRightAnswer),
-    AnswerOption(Some(2), questionId, true, "rightAnswer2", pointsForRightAnswer),
-    AnswerOption(Some(3), questionId, false, "falseAnswer1", pointsForWrongAnswer),
-    AnswerOption(Some(FOUR), questionId, false, "falseAnswer2", pointsForWrongAnswer),
-    AnswerOption(Some(FIVE), questionId, false, "falseAnswer3", pointsForWrongAnswer)
+    AnswerOption(Some(1), Some(questionId), true, "rightAnswer1", pointsForRightAnswer),
+    AnswerOption(Some(2), Some(questionId), true, "rightAnswer2", pointsForRightAnswer),
+    AnswerOption(Some(3), Some(questionId), false, "falseAnswer1", pointsForWrongAnswer),
+    AnswerOption(Some(FOUR), Some(questionId), false, "falseAnswer2", pointsForWrongAnswer),
+    AnswerOption(Some(FIVE), Some(questionId), false, "falseAnswer3", pointsForWrongAnswer)
   )
 
   val preparationQuestions = Seq(
