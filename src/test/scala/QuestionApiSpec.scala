@@ -86,7 +86,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         }
       }
     }
-    it("should create mc question properly") {
+    it("create mc question properly") {
       val sessionId = 1
       val subject = "postSubject"
       val content = "postContent"
@@ -116,7 +116,24 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         }
       }
     }
-    it("should update a question by id") {
+    it("update answer options properly") {
+      val question = preparationQuestions.last.asInstanceOf[ChoiceQuestion]
+      val updatedAnswerOptions: Seq[AnswerOption] = question.answerOptions
+      val updatedQuestion: ChoiceQuestion = question.copy(answerOptions = updatedAnswerOptions)
+      val questionId = updatedQuestion.id.get
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, updatedQuestion.asInstanceOf[Question].toJson.toString)
+      Put("/question/" + questionId.toString, requestEntity) ~> questionApi ~> check {
+        response.status should be(OK)
+        Get("/question/" + questionId.toString) ~> questionApi ~> check {
+          val checkQuestionFuture: Future[Question] = Unmarshal(response.entity).to[Question]
+          checkQuestionFuture.onComplete {
+            case Success(checkQuestion) => checkQuestion.asInstanceOf[ChoiceQuestion].answerOptions should be(updatedAnswerOptions)
+            case Failure(t) => fail("couldn't get updated question with error: " + t)
+          }
+        }
+      }
+    }
+    it("update a question by id") {
       val updatedSubject = "UpdatedSubject"
       val question: Freetext = testQuestions.head.asInstanceOf[Freetext]
       val updatedQuestion: Freetext = question.copy(subject = updatedSubject)
