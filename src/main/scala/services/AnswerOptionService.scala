@@ -10,4 +10,8 @@ object AnswerOptionService extends BaseService {
       answerOption <- answerOptionsTable.filter(_.questionId === questionId)
     } yield answerOption).result
   }
+
+  def create(answerOptions: Seq[AnswerOption]): Future[Seq[AnswerOptionId]] = {
+    answerOptionsTable returning answerOptionsTable.map(_.id) ++= answerOptions
+  }
 }

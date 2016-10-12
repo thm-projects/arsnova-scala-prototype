@@ -14,11 +14,11 @@ trait QuestionApi {
   val questionApi = pathPrefix("question") {
     pathEndOrSingleSlash {
       get {
-        parameters("sessionid".as[SessionId], "variant".as[String]) { (sessionId, variant) =>
-          complete(QuestionService.findQuestionsBySessionIdAndVariant(sessionId, variant))
-        }
-        parameter("sessionid".as[SessionId]) { sessionId =>
-          complete {QuestionService.findAllBySessionId(sessionId)}
+        parameters("sessionid".as[SessionId], "variant".?) { (sessionId, variant) =>
+          variant match {
+            case Some(v) => complete(QuestionService.findQuestionsBySessionIdAndVariant(sessionId, v))
+            case None => complete {QuestionService.findAllBySessionId(sessionId)}
+          }
         }
       } ~
       post {
