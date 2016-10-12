@@ -12,16 +12,19 @@ trait FreetextAnswerApi {
   import mappings.FreetextAnswerJsonProtocol._
 
   val freetextAnswerApi = pathPrefix("question") {
-    pathPrefix(IntNumber) { id =>
+    pathPrefix(IntNumber) { questionId =>
       pathPrefix("freetextAnswer") {
         pathEndOrSingleSlash {
           get {
-            complete (FreetextAnswerService.getByQuestionId(id))
+            complete (FreetextAnswerService.getByQuestionId(questionId))
           } ~
           post {
             entity(as[FreetextAnswer]) { answer =>
               complete (FreetextAnswerService.create(answer).map(_.toJson))
             }
+          } ~
+          delete {
+            complete (FreetextAnswerService.deleteAllByQuestionId(questionId).map(_.toJson))
           }
         } ~
         pathPrefix(IntNumber) { freetextAnswerId =>

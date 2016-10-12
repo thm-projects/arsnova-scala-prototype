@@ -1,6 +1,6 @@
 package api
 
-import services.ChoiceAnswerService
+import services.{ChoiceAnswerService, FreetextAnswerService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -12,17 +12,20 @@ trait ChoiceAnswerApi {
   import mappings.ChoiceAnswerJsonProtocol._
 
   val choiceAnswerApi = pathPrefix("question") {
-    pathPrefix(IntNumber) { id =>
+    pathPrefix(IntNumber) { questionId =>
       pathPrefix("choiceAnswer") {
         pathEndOrSingleSlash {
           get {
-            complete (ChoiceAnswerService.getByQuestionId(id))
+            complete (ChoiceAnswerService.getByQuestionId(questionId))
           } ~
           post {
             entity(as[ChoiceAnswer]) { answer =>
               complete (ChoiceAnswerService.create(answer).map(_.toJson))
             }
-          }
+          } ~
+            delete {
+              complete (ChoiceAnswerService.deleteAllByQuestionId(questionId).map(_.toJson))
+            }
         } ~
         pathPrefix(IntNumber) { choiceAnswerId =>
           pathEndOrSingleSlash {
