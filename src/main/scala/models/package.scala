@@ -5,4 +5,5 @@ package object models {
   type AnswerOptionId = Long
   type FreetextAnswerId = Long
   type ChoiceAnswerId = Long
+  type CommentId = Long
 }
