@@ -1,5 +1,6 @@
 package services
 
+import com.sun.org.apache.xml.internal.security.c14n.implementations.Canonicalizer11_OmitComments
 import models.ChoiceAnswer
 import models.definitions._
 import slick.dbio.{Effect, NoStream}
@@ -16,6 +17,7 @@ trait BaseService extends DatabaseConfig {
   val answerOptionsTable = TableQuery[AnswerOptionsTable]
   val freetextAnswersTable = TableQuery[FreetextAnswersTable]
   val choiceAnswersTable = TableQuery[ChoiceAnswersTable]
+  val commentsTable = TableQuery[CommensTable]
 
   protected implicit def executeFromDb[A](action: SqlAction[A, NoStream, _ <: slick.dbio.Effect]): Future[A] = {
     db.run(action)
