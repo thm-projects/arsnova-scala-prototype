@@ -67,4 +67,10 @@ trait TestData {
     ChoiceAnswer(Some(FOUR), questionId, 1, 3),
     ChoiceAnswer(Some(FIVE), questionId, 1, FOUR)
   )
+
+  val testComments = Seq(
+    Comment(Some(1), 1, 1, false, "subject1", "text1", "1317574085000"),
+    Comment(Some(2), 1, 1, true, "subject2", "text2", "1317574095000"),
+    Comment(Some(3), 1, 1, true, "subject2", "text2", "1317574085000")
+  )
 }
