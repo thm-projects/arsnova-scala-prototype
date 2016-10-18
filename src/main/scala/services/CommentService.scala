@@ -14,7 +14,7 @@ object CommentService extends BaseService {
     commentsTable.filter(_.sessionId === sessionId).result
   }
 
-  def create(comment: Comment): Future[Int] = {
+  def create(comment: Comment): Future[CommentId] = {
     commentsTable returning commentsTable.map(_.id) += comment
   }
 
