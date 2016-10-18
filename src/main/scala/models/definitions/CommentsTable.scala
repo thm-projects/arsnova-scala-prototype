@@ -12,7 +12,7 @@ class CommensTable(tag: Tag) extends Table[Comment](tag, "comments"){
   def isRead: Rep[Boolean] = column[Boolean]("is_read")
   def subject: Rep[String] = column[String]("subject")
   def text: Rep[String] = column[String]("content")
-  def createdAt: Rep[Timestamp] = column[Timestamp]("created_at")
+  def createdAt: Rep[String] = column[String]("created_at")
 
   def * = (id.?, userId, sessionId, isRead, subject, text, createdAt) <> ((Comment.apply _).tupled, Comment.unapply)
 
