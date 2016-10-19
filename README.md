@@ -1,9 +1,9 @@
 # ARSnova 3 Backend Prototype
 
-Akka for http
+This is the new Backend for the ARSnova project. It's implemented with Akka, Slick and Flyway
 
-Slick for db
+## Development
+This project makes use of sbt-revolver for continuous compiling. Just start sbt and start the backend with ```~re-start```.
 
-Flyway for migration
-
-
+## Tests
+You can run the tests with ```sbt test```.
