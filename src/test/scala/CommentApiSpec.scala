@@ -14,6 +14,7 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.Matchers
 import services.BaseService
 import org.scalatest._
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.MissingQueryParamRejection
@@ -32,6 +33,39 @@ trait CommentApiSpec extends FunSpec with Matchers with ScalaFutures with BaseSe
         responseAs[JsArray] should be(testComments.toJson)
       }
     }
-    it
+    it("create comment") {
+      val subject = "postSubject"
+      val text = "postText"
+      val postComment = Comment(None, 1, 1, false, subject, text, "111111111")
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, postComment.toJson.toString)
+      Post("/comment/", requestEntity) ~> commentApi ~> check {
+        response.status should be(OK)
+        val newId = Await.result(Unmarshal(response.entity).to[String], 1.second).toLong
+        val checkComment = postComment.copy(id = Some(newId))
+        Get("/comment/" + newId) ~> commentApi ~> check {
+          responseAs[Comment] should be(checkComment)
+        }
+      }
+    }
+    it("update comment") {
+      val comment = testComments.head
+      val updateComment = comment.copy(subject = "updateSubject", text = "updateText")
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, updateComment.toJson.toString)
+      Put("/comment/" + comment.id.get, requestEntity) ~> commentApi ~> check {
+        response.status should be(OK)
+        Get("/comment/" + comment.id.get) ~> commentApi ~> check {
+          responseAs[Comment] should be(updateComment)
+        }
+      }
+    }
+    it("delete comment") {
+      val commentId = testComments.head.id.get
+      Delete("/comment/" + commentId) ~> commentApi ~> check {
+        response.status should be(OK)
+        Get("/comment/" + commentId) ~> commentApi ~> check {
+          response.status should be(NotFound)
+        }
+      }
+    }
   }
 }
