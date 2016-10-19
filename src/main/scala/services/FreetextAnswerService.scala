@@ -14,7 +14,6 @@ object FreetextAnswerService extends BaseService {
   }
 
   def create(freetextAnswer: FreetextAnswer): Future[FreetextAnswerId] = {
-    println(freetextAnswer)
     freetextAnswersTable returning freetextAnswersTable.map(_.id) += freetextAnswer
   }
 
