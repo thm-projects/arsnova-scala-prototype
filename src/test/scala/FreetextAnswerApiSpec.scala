@@ -39,7 +39,6 @@ trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with
       val newFreetextAnswer = FreetextAnswer(None, questionId, sessionId, subject, text)
       val requestEntity = HttpEntity(MediaTypes.`application/json`, newFreetextAnswer.toJson.toString)
       Post("/question/" + questionId.toString + "/freetextAnswer", requestEntity) ~> freetextAnswerApi ~> check {
-        println(response)
         response.status should be(OK)
         val newId: String =  Await.result(Unmarshal(response.entity).to[String], 1.second)
         Get("/question/" + questionId.toString + "/freetextAnswer") ~> freetextAnswerApi ~> check {

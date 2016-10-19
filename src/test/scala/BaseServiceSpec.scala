@@ -13,7 +13,7 @@ import org.scalatest.BeforeAndAfterEach
 import utils.DatabaseConfig
 
 class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with BeforeAndAfterAll with DatabaseConfig
-  with BaseService with SessionApiSpec with QuestionApiSpec with FreetextAnswerApiSpec with ChoiceAnswerApiSpec with TestData {
+  with BaseService with SessionApiSpec with QuestionApiSpec with FreetextAnswerApiSpec with ChoiceAnswerApiSpec with CommentApiSpec with TestData {
   protected val log: LoggingAdapter = NoLogging
 
   import driver.api._
@@ -27,6 +27,7 @@ class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with Be
     Await.result(answerOptionsTable ++= testAnswerOptions, 10.seconds)
     Await.result(freetextAnswersTable ++= testFreetextAnswers, 10.seconds)
     Await.result(choiceAnswersTable ++= testChoiceAnswers, 10.seconds)
+    Await.result(commentsTable ++= testComments, 10.seconds)
   }
 
   /*Await.result(usersTable ++= testUsers, 10.seconds)
