@@ -5,7 +5,7 @@ import slick.driver.MySQLDriver.api._
 import slick.lifted.ForeignKeyQuery
 
 class FeaturesTable(tag: Tag) extends Table[Features](tag, "features") {
-  def id: Rep[FeaturesId] = column[FeaturesId]("id", 0.PrimaryKey, O.AutoInc)
+  def id: Rep[FeaturesId] = column[FeaturesId]("id", O.PrimaryKey, O.AutoInc)
   def sessionId: Rep[SessionId] = column[SessionId]("session_id")
   def slides: Rep[Boolean] = column[Boolean]("slides")
   def flashcards: Rep[Boolean] = column[Boolean]("flashcards")
