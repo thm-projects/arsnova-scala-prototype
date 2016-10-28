@@ -5,7 +5,7 @@ import slick.driver.MySQLDriver.api._
 import slick.lifted.ForeignKeyQuery
 import java.sql.Timestamp
 
-class CommensTable(tag: Tag) extends Table[Comment](tag, "comments"){
+class CommentsTable(tag: Tag) extends Table[Comment](tag, "comments"){
   def id: Rep[CommentId] = column[CommentId]("id", O.PrimaryKey, O.AutoInc)
   def userId: Rep[UserId] = column[UserId]("user_id")
   def sessionId: Rep[SessionId] = column[SessionId]("session_id")
