@@ -2,7 +2,7 @@ CREATE TABLE features (
   id INT NOT NULL AUTO_INCREMENT,
   session_id INT NOT NULL,
   slides TINYINT(1) NOT NULL DEFAULT 0,
-  flaschards TINYINT(1) NOT NULL DEFAULT 0,
+  flashcards TINYINT(1) NOT NULL DEFAULT 0,
   peer_grading TINYINT(1) NOT NULL DEFAULT 0,
   peer_instruction TINYINT(1) NOT NULL DEFAULT 0,
   comments TINYINT(1) NOT NULL DEFAULT 0,
