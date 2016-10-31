@@ -11,8 +11,8 @@ object FeaturesService extends BaseService {
     featuresTable.filter(_.id === featuresId).result.head
   }
 
-  def getBySessionid(sessionId: SessionId): Future[Seq[Features]] = {
-    featuresTable.filter(_.sessionId === sessionId).result
+  def getBySessionid(sessionId: SessionId): Future[Features] = {
+    featuresTable.filter(_.sessionId === sessionId).result.head
   }
 
   def create(features: Features): Future[FeaturesId] = {
