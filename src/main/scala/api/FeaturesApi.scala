@@ -33,13 +33,13 @@ trait FeaturesApi {
           complete (FeaturesService.delete(featuresId).map(_.toJson))
         }
       }
-    } ~
-    pathPrefix("session") {
-      pathPrefix(IntNumber) { sessionId =>
-        path("features") {
-          get {
-            complete (FeaturesService.getBySessionid(sessionId).map(_.toJson))
-          }
+    }
+  } ~
+  pathPrefix("session") {
+    pathPrefix(IntNumber) { sessionId =>
+      path("features") {
+        get {
+          complete (FeaturesService.getBySessionid(sessionId).map(_.toJson))
         }
       }
     }
