@@ -28,6 +28,7 @@ class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with Be
     Await.result(freetextAnswersTable ++= testFreetextAnswers, 10.seconds)
     Await.result(choiceAnswersTable ++= testChoiceAnswers, 10.seconds)
     Await.result(commentsTable ++= testComments, 10.seconds)
+    Await.result(featuresTable ++= testFeatures, 10.seconds)
   }
 
   /*Await.result(usersTable ++= testUsers, 10.seconds)
