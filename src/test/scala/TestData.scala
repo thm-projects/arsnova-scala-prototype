@@ -73,4 +73,9 @@ trait TestData {
     Comment(Some(2), 1, 1, true, "subject2", "text2", "1317574095000"),
     Comment(Some(3), 1, 1, true, "subject2", "text2", "1317574085000")
   )
+
+  val testFeatures = Seq(
+    Features(Some(1), 1, true, true, true, true, true, true, true, true, true, true),
+    Features(Some(2), 2, true, false, false, false, false, false, false, false, false, false)
+  )
 }
