@@ -6,7 +6,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-class FeaturesService extends BaseService {
+object FeaturesService extends BaseService {
   def getById(featuresId: FeaturesId): Future[Features] = {
     featuresTable.filter(_.id === featuresId).result.head
   }
