@@ -3,6 +3,7 @@ import akka.http.scaladsl.unmarshalling._
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCode}
 import services.{BaseService, SessionService}
 import models._
+import api.QuestionApi
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.server.Directives._
@@ -14,31 +15,31 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.server.MissingQueryParamRejection
 import org.scalatest.{FunSpec, Matchers}
 
-trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
+trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData with QuestionApi {
   import mappings.QuestionJsonProtocol._
   // you need to call unmarshal because of the question trait
   describe("Question api") {
     it("retrieve question by id 1") {
       Get("/question/1") ~> questionApi ~> check {
-        responseAs[JsObject] should be(testQuestions.head.asInstanceOf[Question].toJson)
+        responseAs[JsObject] should be(questionAdapter.toResource(testQuestions.head.asInstanceOf[Question]))
       }
     }
     it("retrieve all questions for session with id 1") {
       Get("/question/?sessionid=1") ~> questionApi ~> check {
-        val questionsJson = testQuestions.asInstanceOf[Seq[Question]].toJson
-        responseAs[JsArray] should be(questionsJson)
+        val questionsJson = questionAdapter.toResources(testQuestions.asInstanceOf[Seq[Question]])
+        responseAs[JsObject] should be(questionsJson)
       }
     }
     it("retrieve preparation questions for session with id 1") {
       Get("/question/?sessionid=1&variant=preparation") ~> questionApi ~> check {
-        val prepQuestionsJson = preparationQuestions.asInstanceOf[Seq[Question]].toJson
-        responseAs[JsArray] should be(prepQuestionsJson)
+        val prepQuestionsJson = questionAdapter.toResources(preparationQuestions.asInstanceOf[Seq[Question]])
+        responseAs[JsObject] should be(prepQuestionsJson)
       }
     }
     it("retrieve live questions for session with id 1") {
       Get("/question/?sessionid=1&variant=live") ~> questionApi ~> check {
-        val liveQuestionsJson = liveQuestions.asInstanceOf[Seq[Question]].toJson
-        responseAs[JsArray] should be(liveQuestionsJson)
+        val liveQuestionsJson = questionAdapter.toResources(liveQuestions.asInstanceOf[Seq[Question]])
+        responseAs[JsObject] should be(liveQuestionsJson)
       }
     }
     it("should deny invalid route") {
@@ -61,7 +62,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         newQuestionId.onSuccess { case newId =>
           val checkFreetext = newFreetext.copy(id = Some(newId.toLong))
           Get("/question/" + newId.toString) ~> questionApi ~> check {
-            responseAs[JsObject] should be(checkFreetext.asInstanceOf[Question].toJson)
+            responseAs[JsObject] should be(questionAdapter.toResource(checkFreetext.asInstanceOf[Question]))
           }
         }
       }
@@ -81,7 +82,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         newQuestionId.onSuccess { case newId =>
           val checkFlashcard = newFlashcard.copy(id = Some(newId.toLong))
           Get("/question/" + newId) ~> questionApi ~> check {
-            responseAs[JsObject] should be(checkFlashcard.asInstanceOf[Question].toJson)
+            responseAs[JsObject] should be(questionAdapter.toResource(checkFlashcard.asInstanceOf[Question]))
           }
         }
       }
