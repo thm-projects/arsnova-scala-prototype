@@ -8,8 +8,16 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait FeaturesApi {
   import mappings.FeatureJsonProtocol._
+
+  def featuresSelfLink(features: Features): Link = {
+    Link("self", s"/features/${features.id.get}")
+  }
+
+  val featuresAdapter = new ResourceAdapter[Features](featuresFormat, featuresSelfLink)
 
   val featuresApi = pathPrefix("features") {
     pathEndOrSingleSlash {
@@ -22,7 +30,7 @@ trait FeaturesApi {
     pathPrefix(IntNumber) { featuresId =>
       pathEndOrSingleSlash {
         get {
-          complete (FeaturesService.getById(featuresId).map(_.toJson))
+          complete (FeaturesService.getById(featuresId).map(featuresAdapter.toResource(_)))
         } ~
         put {
           entity(as[Features]) { features =>
@@ -39,7 +47,7 @@ trait FeaturesApi {
     pathPrefix(IntNumber) { sessionId =>
       path("features") {
         get {
-          complete (FeaturesService.getBySessionid(sessionId).map(_.toJson))
+          complete (FeaturesService.getBySessionid(sessionId).map(featuresAdapter.toResource(_)))
         }
       }
     }

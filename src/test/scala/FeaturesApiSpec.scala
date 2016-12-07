@@ -3,23 +3,25 @@ import org.scalatest.{FunSpec, Matchers}
 import org.scalatest.concurrent.ScalaFutures
 import services.BaseService
 import models._
+import api.FeaturesApi
 import services.FeaturesService
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes}
 import akka.http.scaladsl.model.StatusCodes._
 
-trait FeaturesApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
+trait FeaturesApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes
+    with TestData with FeaturesApi {
   import mappings.FeatureJsonProtocol._
   describe("Features api") {
     it("retrieve features by id") {
       Get("/features/1") ~> featuresApi ~> check {
-        responseAs[JsObject] should be(testFeatures.head.toJson)
+        responseAs[JsObject] should be(featuresAdapter.toResource(testFeatures.head))
       }
     }
     it("retrieve features for session 1") {
       Get("/session/1/features") ~> featuresApi ~> check {
-        responseAs[JsObject] should be(testFeatures.head.toJson)
+        responseAs[JsObject] should be(featuresAdapter.toResource(testFeatures.head))
       }
     }
     it("create features") {
@@ -36,7 +38,7 @@ trait FeaturesApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       Put("/features/" + putFeature.id.get, requestEntity) ~> featuresApi ~> check {
         response.status should be(OK)
         Get("/features/" + putFeature.id.get) ~> featuresApi ~> check {
-          responseAs[Features] should be(putFeature)
+          responseAs[JsObject] should be(featuresAdapter.toResource(putFeature))
         }
       }
     }
