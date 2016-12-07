@@ -8,8 +8,16 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait CommentApi {
   import mappings.CommentJsonProtocol._
+
+  def commentSelfLink(comment: Comment): Link = {
+    Link("self", s"/comment/${comment.id.get}")
+  }
+
+  val commentAdapter = new ResourceAdapter[Comment](commentFormat, commentSelfLink)
 
   val commentApi = pathPrefix("comment") {
     pathEndOrSingleSlash {
@@ -22,7 +30,7 @@ trait CommentApi {
     pathPrefix(IntNumber) { commentId =>
       pathEndOrSingleSlash {
         get {
-          complete (CommentService.getById(commentId).map(_.toJson))
+          complete (CommentService.getById(commentId).map(commentAdapter.toResource(_)))
         } ~
         put {
           entity(as[Comment]) { comment =>
@@ -39,7 +47,7 @@ trait CommentApi {
     pathPrefix(IntNumber) { sessionId =>
       path("comment") {
         get {
-          complete (CommentService.getBySessionId(sessionId).map(_.toJson))
+          complete (CommentService.getBySessionId(sessionId).map(commentAdapter.toResources(_)))
         }
       }
     }

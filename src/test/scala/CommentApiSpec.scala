@@ -5,6 +5,7 @@ import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import models._
+import api.CommentApi
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 
@@ -19,18 +20,19 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
-trait CommentApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
+trait CommentApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes
+    with TestData with CommentApi {
   import mappings.CommentJsonProtocol._
 
   describe("Comment api") {
     it("retrieve comment by id") {
       Get("/comment/1") ~> commentApi ~> check {
-        responseAs[JsObject] should be(testComments.head.toJson)
+        responseAs[JsObject] should be(commentAdapter.toResource(testComments.head))
       }
     }
     it("retrieve all comments by session id") {
       Get("/session/1/comment") ~> commentApi ~> check {
-        responseAs[JsArray] should be(testComments.toJson)
+        responseAs[JsObject] should be(commentAdapter.toResources(testComments))
       }
     }
     it("create comment") {
@@ -43,7 +45,7 @@ trait CommentApiSpec extends FunSpec with Matchers with ScalaFutures with BaseSe
         val newId = Await.result(Unmarshal(response.entity).to[String], 1.second).toLong
         val checkComment = postComment.copy(id = Some(newId))
         Get("/comment/" + newId) ~> commentApi ~> check {
-          responseAs[Comment] should be(checkComment)
+          responseAs[JsObject] should be(commentAdapter.toResource(checkComment))
         }
       }
     }
@@ -54,7 +56,7 @@ trait CommentApiSpec extends FunSpec with Matchers with ScalaFutures with BaseSe
       Put("/comment/" + comment.id.get, requestEntity) ~> commentApi ~> check {
         response.status should be(OK)
         Get("/comment/" + comment.id.get) ~> commentApi ~> check {
-          responseAs[Comment] should be(updateComment)
+          responseAs[JsObject] should be(commentAdapter.toResource(updateComment))
         }
       }
     }
