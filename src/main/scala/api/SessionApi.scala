@@ -8,14 +8,25 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait SessionApi {
   import mappings.SessionJsonProtocol._
 
-  val sessionApi = pathPrefix("session") {
+  val sessionCrudPoint = "session"
+
+  def sessionSelfLink(session: Session): Link = {
+    Link("self", s"/$sessionCrudPoint/${session.id.get}")
+  }
+
+  val sessionAdapter = new ResourceAdapter[Session](sessionFormat, sessionSelfLink)
+
+  val sessionApi = pathPrefix(sessionCrudPoint) {
     pathEndOrSingleSlash {
       get {
         parameter("user".as[UserId]) { (userId) =>
-          complete (SessionService.findUserSessions(userId))
+          ApiRoutes.addRoute("getUserSession", "/session/?user=<username>")
+          complete (SessionService.findUserSessions(userId).map(sessionAdapter.toResources(_)))
         }
       } ~
       post {
@@ -27,7 +38,8 @@ trait SessionApi {
     pathPrefix(IntNumber) { sessionId =>
       pathEndOrSingleSlash {
         get {
-          complete (SessionService.findById(sessionId))
+          ApiRoutes.addRoute("getSession", "/session/<id>")
+          complete (SessionService.findById(sessionId).map(sessionAdapter.toResource(_)))
         } ~
           put {
             entity(as[Session]) { session =>
