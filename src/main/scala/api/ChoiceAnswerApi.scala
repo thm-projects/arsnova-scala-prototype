@@ -8,15 +8,23 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait ChoiceAnswerApi {
   import mappings.ChoiceAnswerJsonProtocol._
+
+  def choiceAnswerSelfLink(choiceAnswer: ChoiceAnswer): Link = {
+    Link("self", s"/session/${choiceAnswer.questionId}/choiceAnswer/${choiceAnswer.id.get}")
+  }
+
+  val choiceAnswerAdapter = new ResourceAdapter[ChoiceAnswer](choiceAnswerFormat, choiceAnswerSelfLink)
 
   val choiceAnswerApi = pathPrefix("question") {
     pathPrefix(IntNumber) { questionId =>
       pathPrefix("choiceAnswer") {
         pathEndOrSingleSlash {
           get {
-            complete (ChoiceAnswerService.getByQuestionId(questionId))
+            complete (ChoiceAnswerService.getByQuestionId(questionId).map(choiceAnswerAdapter.toResources(_)))
           } ~
           post {
             entity(as[ChoiceAnswer]) { answer =>
@@ -30,7 +38,7 @@ trait ChoiceAnswerApi {
         pathPrefix(IntNumber) { choiceAnswerId =>
           pathEndOrSingleSlash {
             get {
-              complete (ChoiceAnswerService.getById(choiceAnswerId))
+              complete (ChoiceAnswerService.getById(choiceAnswerId).map(choiceAnswerAdapter.toResource(_)))
             } ~
             put {
               entity(as[ChoiceAnswer]) { choiceAnswer =>
