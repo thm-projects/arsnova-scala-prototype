@@ -8,15 +8,24 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait FreetextAnswerApi {
   import mappings.FreetextAnswerJsonProtocol._
+
+  def freetextAnswerSelfLink(freetextAnswer: FreetextAnswer): Link = {
+    Link("self", s"/session/${freetextAnswer.questionId}/freetextAnswer/${freetextAnswer.id.get}")
+  }
+
+  val freetextAnswerAdapter = new ResourceAdapter[FreetextAnswer](freetextAnswerFormat, freetextAnswerSelfLink)
 
   val freetextAnswerApi = pathPrefix("question") {
     pathPrefix(IntNumber) { questionId =>
       pathPrefix("freetextAnswer") {
         pathEndOrSingleSlash {
           get {
-            complete (FreetextAnswerService.getByQuestionId(questionId))
+            complete (FreetextAnswerService.getByQuestionId(questionId)
+              .map(freetextAnswerAdapter.toResources(_)))
           } ~
           post {
             entity(as[FreetextAnswer]) { answer =>
@@ -30,7 +39,8 @@ trait FreetextAnswerApi {
         pathPrefix(IntNumber) { freetextAnswerId =>
           pathEndOrSingleSlash {
             get {
-              complete (FreetextAnswerService.getById(freetextAnswerId))
+              complete (FreetextAnswerService.getById(freetextAnswerId)
+                .map(freetextAnswerAdapter.toResource(_)))
             } ~
               put {
                 entity(as[FreetextAnswer]) { freetextAnswer =>

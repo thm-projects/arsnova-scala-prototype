@@ -80,7 +80,10 @@ trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with B
       Delete("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
         response.status should be(OK)
         Get("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
-          responseAs[JsArray] should be(JsArray())
+          responseAs[JsObject] should be(JsObject(List(
+            "data" -> JsArray(),
+            "links" -> JsArray()
+          )))
         }
       }
     }
