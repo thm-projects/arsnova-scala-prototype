@@ -13,13 +13,17 @@ import hateoas.{ApiRoutes, ResourceAdapter, Link}
 trait CommentApi {
   import mappings.CommentJsonProtocol._
 
-  def commentSelfLink(comment: Comment): Link = {
-    Link("self", s"/comment/${comment.id.get}")
+  ApiRoutes.addRoute("comment", "comment")
+
+  def commentLinks(comment: Comment): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("comment")}/${comment.id.get}")
+    )
   }
 
-  val commentAdapter = new ResourceAdapter[Comment](commentFormat, commentSelfLink)
+  val commentAdapter = new ResourceAdapter[Comment](commentFormat, commentLinks)
 
-  val commentApi = pathPrefix("comment") {
+  val commentApi = pathPrefix(ApiRoutes.getRoute("comment")) {
     pathEndOrSingleSlash {
       post {
         entity(as[Comment]) { comment =>
@@ -43,9 +47,9 @@ trait CommentApi {
       }
     }
   } ~
-  pathPrefix("session") {
+  pathPrefix(ApiRoutes.getRoute("session")) {
     pathPrefix(IntNumber) { sessionId =>
-      path("comment") {
+      path(ApiRoutes.getRoute("comment")) {
         get {
           complete (CommentService.getBySessionId(sessionId).map(commentAdapter.toResources(_)))
         }

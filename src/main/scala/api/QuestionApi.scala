@@ -13,15 +13,17 @@ import hateoas.{ApiRoutes, ResourceAdapter, Link}
 trait QuestionApi {
   import mappings.QuestionJsonProtocol._
 
-  val questionCrudPoint = "question"
+  ApiRoutes.addRoute("question", "question")
 
-  def questionSelfLink(question: Question): Link = {
-    Link("self", s"/$questionCrudPoint/${question.id.get}")
+  def questionLinks(question: Question): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("question")}/${question.id.get}")
+    )
   }
 
-  val questionAdapter = new ResourceAdapter[Question](questionFormat, questionSelfLink)
+  val questionAdapter = new ResourceAdapter[Question](questionFormat, questionLinks)
 
-  val questionApi = pathPrefix(questionCrudPoint) {
+  val questionApi = pathPrefix(ApiRoutes.getRoute("question")) {
     pathEndOrSingleSlash {
       get {
         parameters("sessionid".as[SessionId], "variant".?) { (sessionId, variant) =>

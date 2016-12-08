@@ -2,7 +2,7 @@ package hateoas
 
 import spray.json._
 
-class ResourceAdapter[T](jsonFormat: RootJsonFormat[T], selfLink: T => Link) {
+class ResourceAdapter[T](jsonFormat: RootJsonFormat[T], modelLink: T => Seq[Link]) {
   import hateoas.LinkJsonProtocol._
 
   def toResources(models: Seq[T], links: Seq[Link] = Seq()): JsValue = {
@@ -14,7 +14,7 @@ class ResourceAdapter[T](jsonFormat: RootJsonFormat[T], selfLink: T => Link) {
   }
 
   def toResource(model: T, links: Seq[Link] = Seq()): JsValue = {
-    val linksWithSelf = links :+ selfLink(model)
+    val linksWithSelf = links ++ modelLink(model)
     val json: JsValue = jsonFormat.write(model)
     json match {
       case obj: JsObject => addLinks(obj, linksWithSelf)

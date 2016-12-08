@@ -13,15 +13,21 @@ import hateoas.{ApiRoutes, ResourceAdapter, Link}
 trait FreetextAnswerApi {
   import mappings.FreetextAnswerJsonProtocol._
 
-  def freetextAnswerSelfLink(freetextAnswer: FreetextAnswer): Link = {
-    Link("self", s"/session/${freetextAnswer.questionId}/freetextAnswer/${freetextAnswer.id.get}")
+  ApiRoutes.addRoute("freetextAnswer", "freetextAnswer")
+
+  def freetextAnswerLinks(freetextAnswer: FreetextAnswer): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("question")}/${freetextAnswer.questionId}" +
+        s"/${ApiRoutes.getRoute("freetextAnswer")}/${freetextAnswer.id.get}"),
+      Link("question", s"/${ApiRoutes.getRoute("question")}/${freetextAnswer.questionId}")
+    )
   }
 
-  val freetextAnswerAdapter = new ResourceAdapter[FreetextAnswer](freetextAnswerFormat, freetextAnswerSelfLink)
+  val freetextAnswerAdapter = new ResourceAdapter[FreetextAnswer](freetextAnswerFormat, freetextAnswerLinks)
 
-  val freetextAnswerApi = pathPrefix("question") {
+  val freetextAnswerApi = pathPrefix(ApiRoutes.getRoute("question")) {
     pathPrefix(IntNumber) { questionId =>
-      pathPrefix("freetextAnswer") {
+      pathPrefix(ApiRoutes.getRoute("freetextAnswer")) {
         pathEndOrSingleSlash {
           get {
             complete (FreetextAnswerService.getByQuestionId(questionId)

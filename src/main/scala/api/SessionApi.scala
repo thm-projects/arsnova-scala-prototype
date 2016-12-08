@@ -13,15 +13,17 @@ import hateoas.{ApiRoutes, ResourceAdapter, Link}
 trait SessionApi {
   import mappings.SessionJsonProtocol._
 
-  val sessionCrudPoint = "session"
+  ApiRoutes.addRoute("session", "session")
 
-  def sessionSelfLink(session: Session): Link = {
-    Link("self", s"/$sessionCrudPoint/${session.id.get}")
+  def sessionLinks(session: Session): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("session")}/${session.id.get}")
+    )
   }
 
-  val sessionAdapter = new ResourceAdapter[Session](sessionFormat, sessionSelfLink)
+  val sessionAdapter = new ResourceAdapter[Session](sessionFormat, sessionLinks)
 
-  val sessionApi = pathPrefix(sessionCrudPoint) {
+  val sessionApi = pathPrefix(ApiRoutes.getRoute("session")) {
     pathEndOrSingleSlash {
       get {
         parameter("user".as[UserId]) { (userId) =>

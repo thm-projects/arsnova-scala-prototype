@@ -7,11 +7,11 @@ object ApiRoutes {
     routes += name -> url
   }
 
-  def getRoute(name: String): (String, String) = {
+  def getRoute(name: String): String = {
     val url: Option[String] = routes.get(name)
     url match {
-      case Some(v) => (name, v)
-      case None => (name, "no route for this name")
+      case Some(v) => v
+      case None => "no route for this name"
     }
   }
 }

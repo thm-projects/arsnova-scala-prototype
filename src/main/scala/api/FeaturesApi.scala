@@ -13,13 +13,17 @@ import hateoas.{ApiRoutes, ResourceAdapter, Link}
 trait FeaturesApi {
   import mappings.FeatureJsonProtocol._
 
-  def featuresSelfLink(features: Features): Link = {
-    Link("self", s"/features/${features.id.get}")
+  ApiRoutes.addRoute("features", "features")
+
+  def featuresLinks(features: Features): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("features")}/${features.id.get}")
+    )
   }
 
-  val featuresAdapter = new ResourceAdapter[Features](featuresFormat, featuresSelfLink)
+  val featuresAdapter = new ResourceAdapter[Features](featuresFormat, featuresLinks)
 
-  val featuresApi = pathPrefix("features") {
+  val featuresApi = pathPrefix(ApiRoutes.getRoute("features")) {
     pathEndOrSingleSlash {
       post {
         entity(as[Features]) { features =>
@@ -43,9 +47,9 @@ trait FeaturesApi {
       }
     }
   } ~
-  pathPrefix("session") {
+  pathPrefix(ApiRoutes.getRoute("session")) {
     pathPrefix(IntNumber) { sessionId =>
-      path("features") {
+      path(ApiRoutes.getRoute("features")) {
         get {
           complete (FeaturesService.getBySessionid(sessionId).map(featuresAdapter.toResource(_)))
         }

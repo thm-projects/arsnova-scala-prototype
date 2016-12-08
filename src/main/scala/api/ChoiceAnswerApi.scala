@@ -13,15 +13,21 @@ import hateoas.{ApiRoutes, ResourceAdapter, Link}
 trait ChoiceAnswerApi {
   import mappings.ChoiceAnswerJsonProtocol._
 
-  def choiceAnswerSelfLink(choiceAnswer: ChoiceAnswer): Link = {
-    Link("self", s"/session/${choiceAnswer.questionId}/choiceAnswer/${choiceAnswer.id.get}")
+  ApiRoutes.addRoute("choiceAnswer", "choiceAnswer")
+
+  def choiceAnswerLinks(choiceAnswer: ChoiceAnswer): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("question")}/${choiceAnswer.questionId}/" +
+        s"${ApiRoutes.getRoute("choiceAnswer")}/${choiceAnswer.id.get}"),
+      Link("question", s"/${ApiRoutes.getRoute("question")}/${choiceAnswer.questionId}")
+    )
   }
 
-  val choiceAnswerAdapter = new ResourceAdapter[ChoiceAnswer](choiceAnswerFormat, choiceAnswerSelfLink)
+  val choiceAnswerAdapter = new ResourceAdapter[ChoiceAnswer](choiceAnswerFormat, choiceAnswerLinks)
 
-  val choiceAnswerApi = pathPrefix("question") {
+  val choiceAnswerApi = pathPrefix(ApiRoutes.getRoute("question")) {
     pathPrefix(IntNumber) { questionId =>
-      pathPrefix("choiceAnswer") {
+      pathPrefix(ApiRoutes.getRoute("choiceAnswer")) {
         pathEndOrSingleSlash {
           get {
             complete (ChoiceAnswerService.getByQuestionId(questionId).map(choiceAnswerAdapter.toResources(_)))
