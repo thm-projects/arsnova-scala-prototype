@@ -17,7 +17,9 @@ trait SessionApi {
 
   def sessionLinks(session: Session): Seq[Link] = {
     Seq(
-      Link("self", s"/${ApiRoutes.getRoute("session")}/${session.id.get}")
+      Link("self", s"/${ApiRoutes.getRoute("session")}/${session.id.get}"),
+      Link("features", s"/${ApiRoutes.getRoute("session")}/${session.id.get}/${ApiRoutes.getRoute("features")}"),
+      Link("comments", s"/${ApiRoutes.getRoute("session")}/${session.id.get}/${ApiRoutes.getRoute("comment")}")
     )
   }
 
