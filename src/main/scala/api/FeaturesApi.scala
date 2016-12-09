@@ -8,10 +8,22 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait FeaturesApi {
   import mappings.FeatureJsonProtocol._
 
-  val featuresApi = pathPrefix("features") {
+  ApiRoutes.addRoute("features", "features")
+
+  def featuresLinks(features: Features): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("features")}/${features.id.get}")
+    )
+  }
+
+  val featuresAdapter = new ResourceAdapter[Features](featuresFormat, featuresLinks)
+
+  val featuresApi = pathPrefix(ApiRoutes.getRoute("features")) {
     pathEndOrSingleSlash {
       post {
         entity(as[Features]) { features =>
@@ -22,7 +34,7 @@ trait FeaturesApi {
     pathPrefix(IntNumber) { featuresId =>
       pathEndOrSingleSlash {
         get {
-          complete (FeaturesService.getById(featuresId).map(_.toJson))
+          complete (FeaturesService.getById(featuresId).map(featuresAdapter.toResource(_)))
         } ~
         put {
           entity(as[Features]) { features =>
@@ -35,11 +47,11 @@ trait FeaturesApi {
       }
     }
   } ~
-  pathPrefix("session") {
+  pathPrefix(ApiRoutes.getRoute("session")) {
     pathPrefix(IntNumber) { sessionId =>
-      path("features") {
+      path(ApiRoutes.getRoute("features")) {
         get {
-          complete (FeaturesService.getBySessionid(sessionId).map(_.toJson))
+          complete (FeaturesService.getBySessionid(sessionId).map(featuresAdapter.toResource(_)))
         }
       }
     }

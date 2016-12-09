@@ -1,6 +1,7 @@
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCode}
 import services.{BaseService, SessionService}
 import models._
+import api.SessionApi
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -16,17 +17,18 @@ import services.BaseService
 import org.scalatest._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
-trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
+trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData with SessionApi {
   import mappings.SessionJsonProtocol._
+
   describe("Session api") {
     it("retrieve sessions for user 1") {
       Get("/session/?user=1") ~> sessionApi ~> check {
-        responseAs[JsArray] should be(testSessionsForUser1.toJson)
+        responseAs[JsObject] should be(sessionAdapter.toResources(testSessionsForUser1))
       }
     }
     it("retrieve session by id") {
       Get("/session/1/") ~> sessionApi ~> check {
-        responseAs[JsObject] should be(testSessions.head.toJson)
+        responseAs[JsObject] should be(sessionAdapter.toResource(testSessions.head))
       }
     }
     it("should deny invalid route") {
@@ -80,8 +82,8 @@ trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseSe
       val userSessionId = testSessionsForUser2.head.id.get
       Delete("/session/" + userSessionId.toString) ~> sessionApi ~> check {
         response.status should be(OK)
-        Get("/session/?user=2") ~> sessionApi ~> check {
-          responseAs[Seq[Session]] should have length 1
+        Get("/session/" + userSessionId) ~> sessionApi ~> check {
+          response.status should be(NotFound)
         }
       }
     }

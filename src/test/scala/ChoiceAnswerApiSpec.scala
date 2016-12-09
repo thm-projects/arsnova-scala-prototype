@@ -5,6 +5,7 @@ import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import models._
+import api.ChoiceAnswerApi
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 
@@ -18,17 +19,21 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
-trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
+trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes
+    with TestData with ChoiceAnswerApi {
   import mappings.ChoiceAnswerJsonProtocol._
   describe("ChoiceAnswer api") {
     it("retrieve choice answers for question") {
       Get("/question/5/choiceAnswer") ~> choiceAnswerApi ~> check {
-        responseAs[JsArray] should be(testChoiceAnswers.toJson)
+        responseAs[JsObject] should be(choiceAnswerAdapter.toResources(testChoiceAnswers))
       }
     }
-    it("return empty seq when question is a choicequestion") {
+    it("return empty data set when question is no choicequestion") {
       Get("/question/1/choiceAnswer") ~> choiceAnswerApi ~> check {
-        responseAs[JsArray] should be(JsArray())
+        responseAs[JsObject] should be(JsObject(List(
+          "data" -> JsArray(),
+          "links" -> JsArray()
+        )))
       }
     }
     it("create choice answer correctly") {
@@ -40,8 +45,9 @@ trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with B
       Post("/question/" + questionId.toString + "/choiceAnswer", requestEntity) ~> choiceAnswerApi ~> check {
         response.status should be(OK)
         val newId: String =  Await.result(Unmarshal(response.entity).to[String], 1.second)
-        Get("/question/" + questionId.toString + "/choiceAnswer") ~> choiceAnswerApi ~> check {
-          responseAs[Seq[ChoiceAnswer]] should have length (testChoiceAnswers.length + 1)
+        Get("/question/" + questionId.toString + "/choiceAnswer/" + newId) ~> choiceAnswerApi ~> check {
+          val checkChoiceAnswer = newChoiceAnswer.copy(id = Some(newId.toLong))
+          responseAs[JsObject] should be(choiceAnswerAdapter.toResource(checkChoiceAnswer))
         }
       }
     }
@@ -53,7 +59,7 @@ trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with B
       Put("/question/" + choiceAnswer.questionId + "/choiceAnswer/" + choiceAnswer.id.get, requestEntity) ~> choiceAnswerApi ~> check {
         response.status should be(OK)
         Get("/question/" + choiceAnswer.questionId.toString + "/choiceAnswer/" + choiceAnswer.id.get) ~> choiceAnswerApi ~> check {
-          responseAs[ChoiceAnswer] should be(updatedChoiceAnswer)
+          responseAs[JsObject] should be(choiceAnswerAdapter.toResource(updatedChoiceAnswer))
         }
       }
     }
@@ -74,7 +80,10 @@ trait ChoiceAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with B
       Delete("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
         response.status should be(OK)
         Get("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
-          responseAs[JsArray] should be(JsArray())
+          responseAs[JsObject] should be(JsObject(List(
+            "data" -> JsArray(),
+            "links" -> JsArray()
+          )))
         }
       }
     }

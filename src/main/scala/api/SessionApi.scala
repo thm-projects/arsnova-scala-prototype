@@ -8,14 +8,29 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait SessionApi {
   import mappings.SessionJsonProtocol._
 
-  val sessionApi = pathPrefix("session") {
+  ApiRoutes.addRoute("session", "session")
+
+  def sessionLinks(session: Session): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("session")}/${session.id.get}"),
+      Link("features", s"/${ApiRoutes.getRoute("session")}/${session.id.get}/${ApiRoutes.getRoute("features")}"),
+      Link("comments", s"/${ApiRoutes.getRoute("session")}/${session.id.get}/${ApiRoutes.getRoute("comment")}")
+    )
+  }
+
+  val sessionAdapter = new ResourceAdapter[Session](sessionFormat, sessionLinks)
+
+  val sessionApi = pathPrefix(ApiRoutes.getRoute("session")) {
     pathEndOrSingleSlash {
       get {
         parameter("user".as[UserId]) { (userId) =>
-          complete (SessionService.findUserSessions(userId))
+          ApiRoutes.addRoute("getUserSession", "/session/?user=<username>")
+          complete (SessionService.findUserSessions(userId).map(sessionAdapter.toResources(_)))
         }
       } ~
       post {
@@ -27,7 +42,8 @@ trait SessionApi {
     pathPrefix(IntNumber) { sessionId =>
       pathEndOrSingleSlash {
         get {
-          complete (SessionService.findById(sessionId))
+          ApiRoutes.addRoute("getSession", "/session/<id>")
+          complete (SessionService.findById(sessionId).map(sessionAdapter.toResource(_)))
         } ~
           put {
             entity(as[Session]) { session =>

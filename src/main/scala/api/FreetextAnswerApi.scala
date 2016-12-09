@@ -8,15 +8,30 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait FreetextAnswerApi {
   import mappings.FreetextAnswerJsonProtocol._
 
-  val freetextAnswerApi = pathPrefix("question") {
+  ApiRoutes.addRoute("freetextAnswer", "freetextAnswer")
+
+  def freetextAnswerLinks(freetextAnswer: FreetextAnswer): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("question")}/${freetextAnswer.questionId}" +
+        s"/${ApiRoutes.getRoute("freetextAnswer")}/${freetextAnswer.id.get}"),
+      Link("question", s"/${ApiRoutes.getRoute("question")}/${freetextAnswer.questionId}")
+    )
+  }
+
+  val freetextAnswerAdapter = new ResourceAdapter[FreetextAnswer](freetextAnswerFormat, freetextAnswerLinks)
+
+  val freetextAnswerApi = pathPrefix(ApiRoutes.getRoute("question")) {
     pathPrefix(IntNumber) { questionId =>
-      pathPrefix("freetextAnswer") {
+      pathPrefix(ApiRoutes.getRoute("freetextAnswer")) {
         pathEndOrSingleSlash {
           get {
-            complete (FreetextAnswerService.getByQuestionId(questionId))
+            complete (FreetextAnswerService.getByQuestionId(questionId)
+              .map(freetextAnswerAdapter.toResources(_)))
           } ~
           post {
             entity(as[FreetextAnswer]) { answer =>
@@ -30,7 +45,8 @@ trait FreetextAnswerApi {
         pathPrefix(IntNumber) { freetextAnswerId =>
           pathEndOrSingleSlash {
             get {
-              complete (FreetextAnswerService.getById(freetextAnswerId))
+              complete (FreetextAnswerService.getById(freetextAnswerId)
+                .map(freetextAnswerAdapter.toResource(_)))
             } ~
               put {
                 entity(as[FreetextAnswer]) { freetextAnswer =>

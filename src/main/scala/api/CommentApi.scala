@@ -8,10 +8,22 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait CommentApi {
   import mappings.CommentJsonProtocol._
 
-  val commentApi = pathPrefix("comment") {
+  ApiRoutes.addRoute("comment", "comment")
+
+  def commentLinks(comment: Comment): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("comment")}/${comment.id.get}")
+    )
+  }
+
+  val commentAdapter = new ResourceAdapter[Comment](commentFormat, commentLinks)
+
+  val commentApi = pathPrefix(ApiRoutes.getRoute("comment")) {
     pathEndOrSingleSlash {
       post {
         entity(as[Comment]) { comment =>
@@ -22,7 +34,7 @@ trait CommentApi {
     pathPrefix(IntNumber) { commentId =>
       pathEndOrSingleSlash {
         get {
-          complete (CommentService.getById(commentId).map(_.toJson))
+          complete (CommentService.getById(commentId).map(commentAdapter.toResource(_)))
         } ~
         put {
           entity(as[Comment]) { comment =>
@@ -35,11 +47,11 @@ trait CommentApi {
       }
     }
   } ~
-  pathPrefix("session") {
+  pathPrefix(ApiRoutes.getRoute("session")) {
     pathPrefix(IntNumber) { sessionId =>
-      path("comment") {
+      path(ApiRoutes.getRoute("comment")) {
         get {
-          complete (CommentService.getBySessionId(sessionId).map(_.toJson))
+          complete (CommentService.getBySessionId(sessionId).map(commentAdapter.toResources(_)))
         }
       }
     }

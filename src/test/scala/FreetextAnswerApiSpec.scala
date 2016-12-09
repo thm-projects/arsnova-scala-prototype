@@ -5,6 +5,7 @@ import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import models._
+import api.FreetextAnswerApi
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 
@@ -18,17 +19,21 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
-trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData {
+trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes
+    with TestData with FreetextAnswerApi {
   import mappings.FreetextAnswerJsonProtocol._
   describe("FreetextAnswer api") {
     it("retrieve freetext answers for question") {
       Get("/question/1/freetextAnswer") ~> freetextAnswerApi ~> check {
-        responseAs[JsArray] should be(testFreetextAnswersForQuestionOne.toJson)
+        responseAs[JsObject] should be(freetextAnswerAdapter.toResources(testFreetextAnswersForQuestionOne))
       }
     }
     it("return empty seq when question is not a choicequestion") {
       Get("/question/5/freetextAnswer") ~> freetextAnswerApi ~> check {
-        responseAs[JsArray] should be(JsArray())
+        responseAs[JsObject] should be(JsObject(List(
+          "data" -> JsArray(),
+          "links" -> JsArray()
+        )))
       }
     }
     it("create freetext answer correctly") {
@@ -41,8 +46,9 @@ trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with
       Post("/question/" + questionId.toString + "/freetextAnswer", requestEntity) ~> freetextAnswerApi ~> check {
         response.status should be(OK)
         val newId: String =  Await.result(Unmarshal(response.entity).to[String], 1.second)
-        Get("/question/" + questionId.toString + "/freetextAnswer") ~> freetextAnswerApi ~> check {
-          responseAs[Seq[FreetextAnswer]] should have length (testFreetextAnswersForQuestionOne.length + 1)
+        Get("/question/" + questionId.toString + "/freetextAnswer/" + newId) ~> freetextAnswerApi ~> check {
+          val checkFreetextAnswer = newFreetextAnswer.copy(id = Some(newId.toLong))
+          responseAs[JsObject] should be(freetextAnswerAdapter.toResource(checkFreetextAnswer))
         }
       }
     }
@@ -55,7 +61,7 @@ trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with
       Put("/question/" + freetextAnswer.questionId + "/freetextAnswer/" + freetextAnswer.id.get, requestEntity) ~> freetextAnswerApi ~> check {
         response.status should be(OK)
         Get("/question/" + freetextAnswer.questionId.toString + "/freetextAnswer/" + freetextAnswer.id.get) ~> freetextAnswerApi ~> check {
-          responseAs[FreetextAnswer] should be(updatedFreetextAnswer)
+          responseAs[JsObject] should be(freetextAnswerAdapter.toResource(updatedFreetextAnswer))
         }
       }
     }
@@ -76,7 +82,10 @@ trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with
       Delete("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
         response.status should be(OK)
         Get("/question/" + questionId + "/freetextAnswer/") ~> freetextAnswerApi ~> check {
-          responseAs[JsArray] should be(JsArray())
+          responseAs[JsObject] should be(JsObject(List(
+            "data" -> JsArray(),
+            "links" -> JsArray()
+          )))
         }
       }
     }

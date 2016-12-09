@@ -8,16 +8,30 @@ import models._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
 
+import hateoas.{ApiRoutes, ResourceAdapter, Link}
+
 trait QuestionApi {
   import mappings.QuestionJsonProtocol._
 
-  val questionApi = pathPrefix("question") {
+  ApiRoutes.addRoute("question", "question")
+
+  def questionLinks(question: Question): Seq[Link] = {
+    Seq(
+      Link("self", s"/${ApiRoutes.getRoute("question")}/${question.id.get}")
+    )
+  }
+
+  val questionAdapter = new ResourceAdapter[Question](questionFormat, questionLinks)
+
+  val questionApi = pathPrefix(ApiRoutes.getRoute("question")) {
     pathEndOrSingleSlash {
       get {
         parameters("sessionid".as[SessionId], "variant".?) { (sessionId, variant) =>
           variant match {
-            case Some(v) => complete(QuestionService.findQuestionsBySessionIdAndVariant(sessionId, v))
-            case None => complete {QuestionService.findAllBySessionId(sessionId)}
+            case Some(v) => complete(QuestionService.findQuestionsBySessionIdAndVariant(sessionId, v)
+              .map(questionAdapter.toResources(_)))
+            case None => complete {QuestionService.findAllBySessionId(sessionId)
+              .map(questionAdapter.toResources(_))}
           }
         }
       } ~
@@ -30,7 +44,7 @@ trait QuestionApi {
     pathPrefix(IntNumber) { id =>
       pathEndOrSingleSlash {
         get {
-          complete (QuestionService.findById(id))
+          complete (QuestionService.findById(id).map(questionAdapter.toResource(_)))
         } ~
         put {
           entity(as[Question]) { question =>
