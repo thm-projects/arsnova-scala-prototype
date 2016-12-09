@@ -13,8 +13,8 @@ import org.scalatest.BeforeAndAfterEach
 import utils.DatabaseConfig
 
 class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with BeforeAndAfterAll with DatabaseConfig
-  with BaseService with SessionApiSpec with QuestionApiSpec with FreetextAnswerApiSpec with ChoiceAnswerApiSpec with CommentApiSpec
-  with FeaturesApiSpec with TestData with HateoasSpec {
+  with BaseService with HateoasSpec with SessionApiSpec with QuestionApiSpec with FreetextAnswerApiSpec with ChoiceAnswerApiSpec with CommentApiSpec
+  with FeaturesApiSpec with TestData {
   protected val log: LoggingAdapter = NoLogging
 
   import driver.api._
