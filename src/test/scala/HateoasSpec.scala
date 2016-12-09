@@ -8,100 +8,59 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.server.Route
 import hateoas._
 import api._
 
 trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes {
   import hateoas.LinkJsonProtocol._
 
+  def checkLinksForRoute(url: String, api: Route): Unit = {
+    Get(url) ~> api ~> check {
+      val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
+      checkLinks(linksJson)
+    }
+  }
+
+  def checkLinks(linksJson: Seq[JsValue]): Unit = {
+    linksJson.map(_ match {
+      case JsArray(links) => { links.map( link =>
+        Get(linkFormat.read(link).href) ~> routes ~> check {
+          handled shouldBe true
+        }
+      )}
+      case _ => fail("hateoas links are no array")
+    })
+  }
+
   describe("HATEOAS session api") {
     it("check model links") {
-      Get("/session/1/") ~> sessionApi ~> check {
-        val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
-        linksJson.map(_ match {
-          case JsArray(links) => { links.map( link =>
-            Get(linkFormat.read(link).href) ~> routes ~> check {
-              handled shouldBe true
-            }
-          )}
-          case _ => fail("hateoas links are no array")
-        })
-      }
+      checkLinksForRoute("/session/1", sessionApi)
     }
   }
   describe("HATEOAS question api") {
     it("check model links") {
-      Get("/question/1") ~> questionApi ~> check {
-        val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
-        linksJson.map(_ match {
-          case JsArray(links) => { links.map( link =>
-            Get(linkFormat.read(link).href) ~> routes ~> check {
-              handled shouldBe true
-            }
-          )}
-          case _ => fail("hateoas links are no array")
-        })
-      }
+      checkLinksForRoute("/question/1", questionApi)
     }
   }
   describe("HATEOAS freetextanswer api") {
     it("check model links") {
-      Get("/question/1/freetextAnswer/1") ~> freetextAnswerApi ~> check {
-        val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
-        linksJson.map(_ match {
-          case JsArray(links) => { links.map( link =>
-            Get(linkFormat.read(link).href) ~> routes ~> check {
-              handled shouldBe true
-            }
-          )}
-          case _ => fail("hateoas links are no array")
-        })
-      }
+      checkLinksForRoute("/question/1/freetextAnswer/1", freetextAnswerApi)
     }
   }
   describe("HATEOAS choiceanswer api") {
     it("check model links") {
-      Get("/question/5/choiceAnswer/1/") ~> choiceAnswerApi ~> check {
-        val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
-        linksJson.map(_ match {
-          case JsArray(links) => { links.map( link =>
-            Get(linkFormat.read(link).href) ~> routes ~> check {
-              handled shouldBe true
-            }
-          )}
-          case _ => fail("hateoas links are no array")
-        })
-      }
+      checkLinksForRoute("/question/5/choiceAnswer/1/", choiceAnswerApi)
     }
   }
   describe("HATEOAS comment api") {
     it("check model links") {
-      Get("/session/1/comment") ~> commentApi ~> check {
-        val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
-        linksJson.map(_ match {
-          case JsArray(links) => { links.map( link =>
-            Get(linkFormat.read(link).href) ~> routes ~> check {
-              handled shouldBe true
-            }
-          )}
-          case _ => fail("hateoas links are no array")
-        })
-      }
+      checkLinksForRoute("/session/1/comment", commentApi)
     }
   }
   describe("HATEOAS features api") {
     it("check model links") {
-      Get("/session/1/features") ~> featuresApi ~> check {
-        val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
-        linksJson.map(_ match {
-          case JsArray(links) => { links.map( link =>
-            Get(linkFormat.read(link).href) ~> routes ~> check {
-              handled shouldBe true
-            }
-          )}
-          case _ => fail("hateoas links are no array")
-        })
-      }
+      checkLinksForRoute("/session/1/features", featuresApi)
     }
   }
 }
