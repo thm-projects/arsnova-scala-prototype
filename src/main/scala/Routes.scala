@@ -3,8 +3,7 @@ import api._
 
 trait Routes extends ApiErrorHandler with UserApi with SessionApi with QuestionApi with FreetextAnswerApi with ChoiceAnswerApi
   with CommentApi with FeaturesApi {
-  val routes =
-    pathPrefix("api") {
+  val routes = {
       userApi ~
       sessionApi ~
       questionApi ~
