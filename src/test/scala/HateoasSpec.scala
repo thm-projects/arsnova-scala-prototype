@@ -24,6 +24,7 @@ trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseServi
               handled shouldBe true
             }
           )}
+          case _ => fail("hateoas links are no array")
         })
       }
     }
@@ -38,6 +39,7 @@ trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseServi
               handled shouldBe true
             }
           )}
+          case _ => fail("hateoas links are no array")
         })
       }
     }
@@ -52,6 +54,7 @@ trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseServi
               handled shouldBe true
             }
           )}
+          case _ => fail("hateoas links are no array")
         })
       }
     }
@@ -66,6 +69,7 @@ trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseServi
               handled shouldBe true
             }
           )}
+          case _ => fail("hateoas links are no array")
         })
       }
     }
@@ -80,6 +84,7 @@ trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseServi
               handled shouldBe true
             }
           )}
+          case _ => fail("hateoas links are no array")
         })
       }
     }
@@ -94,6 +99,7 @@ trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseServi
               handled shouldBe true
             }
           )}
+          case _ => fail("hateoas links are no array")
         })
       }
     }
