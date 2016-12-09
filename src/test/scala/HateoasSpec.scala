@@ -15,14 +15,14 @@ import api._
 trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes {
   import hateoas.LinkJsonProtocol._
 
-  def checkLinksForRoute(url: String, api: Route): Unit = {
+  def checkLinksForRoute(url: String, api: Route): Seq[scala.collection.immutable.Vector[org.scalatest.Assertion]] = {
     Get(url) ~> api ~> check {
       val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")
       checkLinks(linksJson)
     }
   }
 
-  def checkLinks(linksJson: Seq[JsValue]): Unit = {
+  def checkLinks(linksJson: Seq[JsValue]): Seq[scala.collection.immutable.Vector[org.scalatest.Assertion]] = {
     linksJson.map(_ match {
       case JsArray(links) => { links.map( link =>
         Get(linkFormat.read(link).href) ~> routes ~> check {
