@@ -21,13 +21,13 @@ trait TestData extends BaseService {
     sessionsTable += Session(None, "11111111", 1, "session2", "s2"),
     sessionsTable += Session(None, "87654321", 1, "session3", "s2"),
 
-    questionsTable += Freetext(None, 1, "subject1", "First Test Question \\o/", "preparation", "freetext"),
-    questionsTable += Freetext(None, 1, "subject2", "Second Question. Isn't that nice?", "preparation", "freetext"),
-    questionsTable += Freetext(None, 1, "subject3", "First lecture question", "lecture", "freetext"),
-    questionsTable += Flashcard(None, 1, "subject4", "Test Data isn't my thing", "lecture", "flashcard",
-      "this is a backside. I'm making a note here: huge success!"),
-    questionsTable += ChoiceQuestion(None, 1, "subject5", "Last but not least", "lecture", "mc", Nil),
-    questionsTable += ChoiceQuestion(None, 1, "subject1", "First Question on second session", "lecture", "mc", Nil),
+    /*questionsTable += Question(None, 1, "subject1", "First Test Question \\o/", "preparation", "freetext", FormatAttributes(Nil), None),
+    questionsTable += Question(None, 1, "subject2", "Second Question. Isn't that nice?", "preparation", "freetext", FormatAttributes(Nil), None),
+    questionsTable += Question(None, 1, "subject3", "First lecture question", "lecture", "freetext", FormatAttributes(Nil), None),
+    questionsTable += Question(None, 1, "subject4", "Test Data isn't my thing", "lecture", "flashcard",
+      FormatAttributes(Seq(Attribute("backside", "this is a backside. I'm making a note here: huge success!"))), None),
+    questionsTable += Question(None, 1, "subject5", "Last but not least", "lecture", "mc", FormatAttributes(Nil), None),
+    questionsTable += Question(None, 1, "subject1", "First Question on second session", "lecture", "mc", FormatAttributes(Nil), None),*/
 
     answerOptionsTable += AnswerOption(None, Some(answerOptionId1), true, "FirstAnswerOption", pointsForRightAnswer),
     answerOptionsTable += AnswerOption(None, Some(answerOptionId1), false, "FirstAnswerOption", pointsForWrongAnswer),
