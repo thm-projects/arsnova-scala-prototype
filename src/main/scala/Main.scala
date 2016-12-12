@@ -14,7 +14,7 @@ object Main extends App with Config with MigrationConfig with Routes with TestDa
   protected implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   //migrate()
-  reloadSchema()
+  //reloadSchema()
   //populateDB
 
   Http().bindAndHandle(handler = logRequestResult("log")(routes), interface = httpInterface, port = httpPort)
