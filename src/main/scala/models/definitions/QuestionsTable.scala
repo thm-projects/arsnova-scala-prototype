@@ -23,13 +23,13 @@ class QuestionsTable(tag: Tag) extends Table[Question](tag, "questions"){
     { q: (Option[QuestionId], SessionId, String, String, String, String, String) => q match {
       case (id, sessionId, subject, content, variant, format, formatAttributes) => {
         formatAttributes match {
-          case "{}" => new Question(id, sessionId, subject, content, variant, format, FormatAttributes(Map()), None)
+          case "null" => new Question(id, sessionId, subject, content, variant, format, None, None)
           case _ => val fA = formatAttributes.substring(1, formatAttributes.length - 1)
             .split(",")
             .map(_.split(":"))
             .map { case Array(k, v) => (k.substring(1, k.length-1), v.substring(1, v.length-1))}
             .toMap
-            new Question(id, sessionId, subject, content, variant, format, FormatAttributes(fA), None)
+            new Question(id, sessionId, subject, content, variant, format, Some(FormatAttributes(fA)), None)
         }
       }
     }}, { q: Question =>

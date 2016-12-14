@@ -9,6 +9,6 @@ case class Question(
                      content: String,
                      variant: String,
                      format: String,
-                     formatAttributes: FormatAttributes,
+                     formatAttributes: Option[FormatAttributes],
                      answerOptions: Option[Seq[AnswerOption]]
                    )

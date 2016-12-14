@@ -1,6 +1,6 @@
 package mappings
 
-import models.{Attribute, FormatAttributes, Question}
+import models.{FormatAttributes, Question}
 import spray.json._
 
 object QuestionJsonProtocol extends DefaultJsonProtocol {
