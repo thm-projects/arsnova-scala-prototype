@@ -1,30 +1,32 @@
 package mappings
 
-import models.{ChoiceQuestion, Flashcard, Freetext, Question}
+import models.{FormatAttributes, Question}
 import spray.json._
 
 object QuestionJsonProtocol extends DefaultJsonProtocol {
   import AnswerOptionJsonProtocol._
 
-  implicit object questionFormat extends RootJsonFormat[Question] {
-    implicit val choiceQuestionFormat: RootJsonFormat[ChoiceQuestion] = jsonFormat7(ChoiceQuestion)
-    implicit val freetextFormat: RootJsonFormat[Freetext] = jsonFormat6(Freetext)
-    implicit val flashcardFormat: RootJsonFormat[Flashcard] = jsonFormat7(Flashcard)
-    def write(q: Question): JsValue = q match {
-      case Freetext(_, _, _, _, _, _) => q.asInstanceOf[Freetext].toJson
-      case Flashcard(_, _, _, _, _, "flashcard", _) => q.asInstanceOf[Flashcard].toJson
-      case ChoiceQuestion(_, _, _, _, _, _, _) => q.asInstanceOf[ChoiceQuestion].toJson
+  implicit object formatAttributesFormat extends RootJsonFormat[FormatAttributes] {
+    def write(fA: FormatAttributes): JsValue = {
+      val keyVals = fA.attributes.map {
+        case (key, value) => key -> JsString(value)
+      }
+      JsObject(keyVals)
     }
-    def read(json: JsValue): Question = {
-      json.asJsObject.getFields(
-        "format"
-      ) match {
-        case Seq(JsString(format)) => format match {
-          case "flashcard" => json.convertTo[Flashcard]
-          case "mc" => json.convertTo[ChoiceQuestion]
-          case "freetext" => json.convertTo[Freetext]
+
+    def read(json: JsValue): FormatAttributes = {
+      json match {
+        case js: JsObject => {
+          val wat: Map[String, JsValue] = json.asJsObject.fields
+          val attributes = wat.map {
+            case (key, value) => key -> value.convertTo[String]
+          }
+          FormatAttributes(attributes = attributes)
         }
+        case _ => FormatAttributes(Map())
       }
     }
   }
+
+  implicit val questionFormat: RootJsonFormat[Question] = jsonFormat8(Question)
 }

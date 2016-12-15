@@ -9,9 +9,9 @@ import scala.util.{Failure, Success}
 object QuestionService extends BaseService {
   def findQuestionsBySessionIdAndVariant(sessionId: SessionId, variant: String): Future[Seq[Question]] = {
     db.run(questionsTable.filter(q => q.sessionId === sessionId && q.variant === variant).result).map(qSeq =>
-      Future.traverse(qSeq) { q: Question => q match {
-        case ChoiceQuestion(id, _, _, _, _, _, _) => {
-          AnswerOptionService.findByQuestionId(id.get).map(a => q.asInstanceOf[ChoiceQuestion].copy(answerOptions = a))
+      Future.traverse(qSeq) { q: Question => q.format match {
+        case "mc" => {
+          AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a)))
         }
         case _ => Future(q)
       }}
@@ -20,29 +20,29 @@ object QuestionService extends BaseService {
 
   def findAllBySessionId(sessionId: SessionId): Future[Seq[Question]] = {
     db.run(questionsTable.filter(_.sessionId === sessionId).result).map(qSeq =>
-      Future.traverse(qSeq) { q: Question => q match {
-        case ChoiceQuestion(id, _, _, _, _, _, _) => {
-          AnswerOptionService.findByQuestionId(id.get).map(a => q.asInstanceOf[ChoiceQuestion].copy(answerOptions = a))
+      Future.traverse(qSeq) { q: Question => q.format match {
+        case "mc" => {
+          AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a)))
         }
         case _ => Future(q)
       }}
     ).flatMap(identity)
   }
   def findById(questionId: QuestionId): Future[Question] = {
-    db.run(questionsTable.filter(_.id === questionId).result.head).map(q => q match {
-        case ChoiceQuestion(id, _, _, _, _, _, _) => {
-          AnswerOptionService.findByQuestionId(id.get).map(a => q.asInstanceOf[ChoiceQuestion].copy(answerOptions = a))
+    db.run(questionsTable.filter(_.id === questionId).result.head).map(q => q.format match {
+        case "mc" => {
+          AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a)))
         }
         case _ => Future(q)
       }
     ).flatMap(identity)
   }
   def create(newQuestion: Question): Future[QuestionId] = {
-    newQuestion match {
-      case ChoiceQuestion(_, _, _, _, _, _, answerOptions) => {
+    newQuestion.format match {
+      case "mc" => {
         (db.run(questionsTable returning questionsTable.map(_.id) += newQuestion)).map(
           qId => {
-            val answerOptionsWithQId = answerOptions.map(_.copy(questionId = Some(qId)))
+            val answerOptionsWithQId = newQuestion.answerOptions.get.map(_.copy(questionId = Some(qId)))
             AnswerOptionService.create(answerOptionsWithQId)
             qId
           })
