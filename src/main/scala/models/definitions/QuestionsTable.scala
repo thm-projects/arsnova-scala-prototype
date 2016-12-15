@@ -4,9 +4,6 @@ import models._
 import slick.driver.MySQLDriver.api._
 import slick.lifted.ForeignKeyQuery
 import models.Session
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
 import spray.json._
 
 class QuestionsTable(tag: Tag) extends Table[Question](tag, "questions"){
