@@ -1,17 +1,19 @@
 package models
 
 import akka.actor._
-import akka.stream.scaladsl.Flow
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.OverflowStrategy
+import akka.stream._
 import akka.stream.scaladsl._
+import GraphDSL.Implicits
+import akka.NotUsed
 
-class Feedback(sessionId: SessionId, actorSystem: ActorSystem) {
+class Feedback(sessionId: SessionId, implicit val actorSystem: ActorSystem) {
   private[this] val feedbackActor = actorSystem.actorOf(Props(classOf[FeedbackActor], sessionId))
 
-  def websocketFlow(): Flow[Message, Message, Any] =
-    Flow(Source.actorRef[FeedbackMessage](500, OverflowStrategy.fail)) { implicit builder =>
-      chatSource =>
+  def websocketFlow(): Flow[Message, Message, _] =
+    Flow[Message, Message, NotUsed](Source.actorRef[FeedbackMessage](bufferSize = 5, OverflowStrategy.fail)) { implicit builder =>
+      feedbackSource =>
         val fromWebsocket = builder.add(
           Flow[Message].collect {
             case TextMessage.Strict(txt) => IncomingFeedback(txt.toInt)
@@ -24,10 +26,24 @@ class Feedback(sessionId: SessionId, actorSystem: ActorSystem) {
           }
         )
 
+        val feedbackActorSink = Sink.actorRef[FeedbackEvent](feedbackActor, UserLeft)
+
         val merge = builder.add(Merge[FeedbackEvent](2))
+
+        val actorAsSource = builder.materializedValue.map(actor => UserJoined(actor))
+
+        fromWebsocket ~> merge.in(0)
+
+        actorAsSource -> merge.in(1)
+
+        merge ~> feedbackActorSink
+
+        feedbackSource ~> backToWebsocket
+
+        (fromWebsocket.inlet, backToWebsocket.outlet)
     }
 
-  //def sendMessage(msg: )
+  def sendMessage(msg: FeedbackMessage): Unit = feedbackActor ! msg
 }
 
 object Feedback {
@@ -60,6 +76,9 @@ class FeedbackActor(sessionId: SessionId) extends Actor {
   override def receive: Receive = {
     case UserJoined(actorRef: ActorRef) =>
       participants += "" -> actorRef
+    case IncomingFeedback(n: Int) =>
+      feedback(n) = feedback(n) + 1
+      sendFeedback()
   }
 }
 
@@ -68,5 +87,7 @@ case class FeedbackMessage(feedback: Array[Int])
 sealed trait FeedbackEvent
 
 case class UserJoined(actorRef: ActorRef) extends FeedbackEvent
+
+case class UserLeft(actorRef: ActorRef) extends FeedbackEvent
 
 case class IncomingFeedback(feedback: Int) extends FeedbackEvent

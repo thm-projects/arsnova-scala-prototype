@@ -1,3 +1,5 @@
+package main
+
 import akka.http.scaladsl.server.Directives._
 import api._
 

@@ -7,6 +7,7 @@ import akka.http.scaladsl.server.Directives._
 import spray.json._
 
 trait FeedbackApi {
+  import main.Shared._
   val feedbackApi = pathPrefix("feedback") {
     pathEndOrSingleSlash {
       parameter("session".as[SessionId]) { sessionId =>

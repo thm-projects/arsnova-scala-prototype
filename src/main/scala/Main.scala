@@ -1,3 +1,5 @@
+package main
+
 import akka.actor.ActorSystem
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
@@ -10,10 +12,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 
 object Main extends App with Config with MigrationConfig with Routes with TestData {
-  private implicit val system = ActorSystem()
-  protected implicit val executor: ExecutionContext = system.dispatcher
-  protected val log: LoggingAdapter = Logging(system, getClass)
-  protected implicit val materializer: ActorMaterializer = ActorMaterializer()
+  import Shared._
 
   //migrate()
   //reloadSchema()
