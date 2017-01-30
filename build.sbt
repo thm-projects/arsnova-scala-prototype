@@ -27,3 +27,6 @@ libraryDependencies ++= {
 //  "org.scalamock"         %% "scalamock-scalatest-support"          % scalaMockVersion
   )
 }
+
+// skip Tests in assembly job
+test in assembly := {}

@@ -1,3 +1,7 @@
+stages:
+  - test
+  - build
+
 services:
   - mysql:latest
 
@@ -5,17 +9,36 @@ variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: arsnova3
   MYSQL_ROOT_PASSWORD: arsnova3_prototype
+  WAR_FILE: target/scala-2.11/ARSnova-*.jar
 
 stylecheck:
+  stage: test
   tags:
     - sbt
+  dependencies: []
   script:
     - sbt scalastyle
     - sbt test:scalastyle
 
 test:
+  stage: test
   tags:
     - sbt
+  dependencies: []
   script:
     # Execute your project's tests
     - sbt clean test
+
+package:
+  stage: build
+  only:
+    - master
+    - /^v[0-9]+/
+  tags:
+    - sbt
+  dependencies: []
+  script:
+    - sbt assembly
+  artifacts:
+    paths:
+      - $WAR_FILE
