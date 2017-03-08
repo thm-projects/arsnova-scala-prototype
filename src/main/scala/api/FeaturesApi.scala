@@ -10,17 +10,24 @@ import spray.json._
 
 import hateoas.{ApiRoutes, ResourceAdapter, Link}
 
+/*
+The API Interface regarding session features.
+ */
 trait FeaturesApi {
+  // protocol for serializing data
   import mappings.FeatureJsonProtocol._
 
+  // add the "top level" endpoint to ApiRoutes
   ApiRoutes.addRoute("features", "features")
 
+  // function to generate the model links
   def featuresLinks(features: Features): Seq[Link] = {
     Seq(
       Link("self", s"/${ApiRoutes.getRoute("features")}/${features.id.get}")
     )
   }
 
+  // the HATEOAS Adapter
   val featuresAdapter = new ResourceAdapter[Features](featuresFormat, featuresLinks)
 
   val featuresApi = pathPrefix(ApiRoutes.getRoute("features")) {

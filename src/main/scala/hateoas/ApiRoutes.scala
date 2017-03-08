@@ -1,5 +1,8 @@
 package hateoas
 
+/*
+This object stores every "routepiece" (e.g. "session") to reduce redundancy in HATEOAS impl.
+ */
 object ApiRoutes {
   val routes = scala.collection.mutable.Map[String, String]()
 
@@ -7,6 +10,10 @@ object ApiRoutes {
     routes += name -> url
   }
 
+  /*
+  This doesn't return a Try since it's used for API-declaration.
+  Correct behaviour of HATEOAS needs to be checked with tests!
+   */
   def getRoute(name: String): String = {
     val url: Option[String] = routes.get(name)
     url match {

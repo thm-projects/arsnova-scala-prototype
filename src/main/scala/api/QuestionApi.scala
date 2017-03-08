@@ -10,17 +10,24 @@ import spray.json._
 
 import hateoas.{ApiRoutes, ResourceAdapter, Link}
 
+/*
+The API Interface regarding questions.
+ */
 trait QuestionApi {
+  // protocol for serializing data
   import mappings.QuestionJsonProtocol._
 
+  // add the "top level" endpoint to ApiRoutes
   ApiRoutes.addRoute("question", "question")
 
+  // function to generate the model links
   def questionLinks(question: Question): Seq[Link] = {
     Seq(
       Link("self", s"/${ApiRoutes.getRoute("question")}/${question.id.get}")
     )
   }
 
+  // the HATEOAS Adapter
   val questionAdapter = new ResourceAdapter[Question](questionFormat, questionLinks)
 
   val questionApi = pathPrefix(ApiRoutes.getRoute("question")) {

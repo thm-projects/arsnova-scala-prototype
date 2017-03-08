@@ -6,6 +6,9 @@ import spray.json._
 object QuestionJsonProtocol extends DefaultJsonProtocol {
   import AnswerOptionJsonProtocol._
 
+  /*
+   FormatAttributes JSON protocol must be done manually since the map isn't serialized in a "spray.json default way"
+   */
   implicit object formatAttributesFormat extends RootJsonFormat[FormatAttributes] {
     def write(fA: FormatAttributes): JsValue = {
       val keyVals = fA.attributes.map {
@@ -28,5 +31,6 @@ object QuestionJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
+  // questin JSON protocol utilizes the above format. No need to manually do things here
   implicit val questionFormat: RootJsonFormat[Question] = jsonFormat8(Question)
 }

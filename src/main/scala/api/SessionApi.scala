@@ -10,11 +10,17 @@ import spray.json._
 
 import hateoas.{ApiRoutes, ResourceAdapter, Link}
 
+/*
+The API Interface regarding sessions, the core component for arsnova.voting.
+ */
 trait SessionApi {
+  // protocol for serializing data
   import mappings.SessionJsonProtocol._
 
+  // add the "top level" endpoint to ApiRoutes
   ApiRoutes.addRoute("session", "session")
 
+  // function to generate the model links
   def sessionLinks(session: Session): Seq[Link] = {
     Seq(
       Link("self", s"/${ApiRoutes.getRoute("session")}/${session.id.get}"),
@@ -23,6 +29,7 @@ trait SessionApi {
     )
   }
 
+  // the HATEOAS Adapter
   val sessionAdapter = new ResourceAdapter[Session](sessionFormat, sessionLinks)
 
   val sessionApi = pathPrefix(ApiRoutes.getRoute("session")) {

@@ -10,11 +10,17 @@ import spray.json._
 
 import hateoas.{ApiRoutes, ResourceAdapter, Link}
 
+/*
+The API Interface regarding answers to choice questions (e.g. MC, SC).
+ */
 trait ChoiceAnswerApi {
+  // protocol for serializing data
   import mappings.ChoiceAnswerJsonProtocol._
 
+  // add the "top level" endpoint to ApiRoutes
   ApiRoutes.addRoute("choiceAnswer", "choiceAnswer")
 
+  // function to generate the model links
   def choiceAnswerLinks(choiceAnswer: ChoiceAnswer): Seq[Link] = {
     Seq(
       Link("self", s"/${ApiRoutes.getRoute("question")}/${choiceAnswer.questionId}/" +
@@ -23,6 +29,7 @@ trait ChoiceAnswerApi {
     )
   }
 
+  // the HATEOAS Adapter
   val choiceAnswerAdapter = new ResourceAdapter[ChoiceAnswer](choiceAnswerFormat, choiceAnswerLinks)
 
   val choiceAnswerApi = pathPrefix(ApiRoutes.getRoute("question")) {

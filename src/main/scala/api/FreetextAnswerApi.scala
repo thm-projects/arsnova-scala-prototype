@@ -10,11 +10,17 @@ import spray.json._
 
 import hateoas.{ApiRoutes, ResourceAdapter, Link}
 
+/*
+The API Interface regarding answers for the question type "freetext".
+ */
 trait FreetextAnswerApi {
+  // protocol for serializing data
   import mappings.FreetextAnswerJsonProtocol._
 
+  // add the "top level" endpoint to ApiRoutes
   ApiRoutes.addRoute("freetextAnswer", "freetextAnswer")
 
+  // function to generate the model links
   def freetextAnswerLinks(freetextAnswer: FreetextAnswer): Seq[Link] = {
     Seq(
       Link("self", s"/${ApiRoutes.getRoute("question")}/${freetextAnswer.questionId}" +
@@ -23,6 +29,7 @@ trait FreetextAnswerApi {
     )
   }
 
+  // the HATEOAS Adapter
   val freetextAnswerAdapter = new ResourceAdapter[FreetextAnswer](freetextAnswerFormat, freetextAnswerLinks)
 
   val freetextAnswerApi = pathPrefix(ApiRoutes.getRoute("question")) {

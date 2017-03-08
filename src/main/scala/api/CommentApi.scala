@@ -10,17 +10,24 @@ import spray.json._
 
 import hateoas.{ApiRoutes, ResourceAdapter, Link}
 
+/*
+The API Interface regarding comments (formerly known as "interposed question"), made by participants.
+ */
 trait CommentApi {
+  // protocol for serializing data
   import mappings.CommentJsonProtocol._
 
+  // add the "top level" endpoint to ApiRoutes
   ApiRoutes.addRoute("comment", "comment")
 
+  // function to generate the model links
   def commentLinks(comment: Comment): Seq[Link] = {
     Seq(
       Link("self", s"/${ApiRoutes.getRoute("comment")}/${comment.id.get}")
     )
   }
 
+  // the HATEOAS Adapter
   val commentAdapter = new ResourceAdapter[Comment](commentFormat, commentLinks)
 
   val commentApi = pathPrefix(ApiRoutes.getRoute("comment")) {
