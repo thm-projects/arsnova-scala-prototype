@@ -15,6 +15,13 @@ import api._
 trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes {
   import hateoas.LinkJsonProtocol._
 
+  /**
+    * Makes a GET-Request to the url, extracts the links in the result and checks them by verifying the handling
+    *
+    * @param url the url to check
+    * @param api the api interface to send the request to
+    * @return sequence assertions
+    */
   def checkLinksForRoute(url: String, api: Route): Seq[scala.collection.immutable.Vector[org.scalatest.Assertion]] = {
     Get(url) ~> api ~> check {
       val linksJson: Seq[JsValue] = Await.result(Unmarshal(response.entity).to[JsObject], 1.second).getFields("links")

@@ -20,6 +20,7 @@ class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with Be
   import driver.api._
 
 
+  // triggered by a hook that's triggered once (befor the tests are executed)
   protected override def beforeAll() = {
     reloadSchema
     Await.result(usersTable ++= testUsers, 10.seconds)
@@ -31,11 +32,4 @@ class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with Be
     Await.result(commentsTable ++= testComments, 10.seconds)
     Await.result(featuresTable ++= testFeatures, 10.seconds)
   }
-
-  /*Await.result(usersTable ++= testUsers, 10.seconds)
-  Await.result(sessionsTable ++= testSessions, 10.seconds)
-  Await.result(questionsTable ++= testQuestions, 10.seconds)
-  Await.result(answerOptionsTable ++= testAnswerOptions, 10.seconds)
-  Await.result(freetextAnswersTable ++= testFreetextAnswers, 10.seconds)
-  Await.result(choiceAnswersTable ++= testChoiceAnswers, 10.seconds)*/
 }
