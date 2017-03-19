@@ -12,6 +12,7 @@ variables:
   MYSQL_ROOT_PASSWORD: arsnova3_prototype
   WAR_FILE: target/scala-2.11/arsnova-3-backend*.jar
   MIRROR_REPO: git@github.com:thm-projects/arsnova-3-backend.git
+  REPORT_DIR: target/gatling-it/stresstest*
 
 stylecheck:
   stage: test
@@ -43,6 +44,17 @@ sync_mirror:
     - git update-ref -d refs/tags/production
     - git update-ref -d refs/tags/staging
     - git push --mirror "$MIRROR_REPO"
+
+stresstest:
+  stage: test
+  tags:
+    - sbt
+  dependencies: []
+  script:
+    - sbt clean gatling-it:test
+  artifacts:
+    paths:
+      - $REPORT_DIR
 
 package:
   stage: build
