@@ -47,6 +47,9 @@ sync_mirror:
 
 stresstest:
   stage: test
+  only:
+    - master
+    - /^v[0-9]+/
   tags:
     - sbt
   dependencies: []
