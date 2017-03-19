@@ -2,7 +2,9 @@ import io.gatling.core.Predef._ // 2
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class BasicSimulation extends Simulation {
+class Stresstest extends Simulation {
+  println("starting webserver")
+  WebServer.main(Array())
 
   val httpProtocol = http
     .baseURL("http://localhost:9000")
