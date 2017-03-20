@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - synchronization
 
 services:
   - mysql:latest
