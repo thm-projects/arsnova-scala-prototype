@@ -1,4 +1,4 @@
-name := "ARSnova-prototype"
+name := "arsnova-3-backend"
 
 version := "0.0.1"
 

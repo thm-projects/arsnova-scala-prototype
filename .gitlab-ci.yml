@@ -10,7 +10,7 @@ variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: arsnova3
   MYSQL_ROOT_PASSWORD: arsnova3_prototype
-  WAR_FILE: target/scala-2.11/ARSnova-*.jar
+  WAR_FILE: target/scala-2.11/arsnova-3-backend*.jar
   MIRROR_REPO: git@github.com:thm-projects/arsnova-3-backend.git
 
 stylecheck:
