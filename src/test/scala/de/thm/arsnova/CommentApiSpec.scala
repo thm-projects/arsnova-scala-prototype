@@ -1,28 +1,27 @@
+package de.thm.arsnova
+
+import de.thm.arsnova.services.{BaseService, SessionService}
+import de.thm.arsnova.models._
+import de.thm.arsnova.api.CommentApi
+
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCode}
-import services.{BaseService, SessionService}
-import models._
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import models._
-import api.CommentApi
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 
-import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.Matchers
-import services.BaseService
 import org.scalatest._
-
-import scala.concurrent.Await
+import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
 trait CommentApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes
     with TestData with CommentApi {
-  import mappings.CommentJsonProtocol._
+  import de.thm.arsnova.mappings.CommentJsonProtocol._
 
   describe("Comment api") {
     it("retrieve comment by id") {

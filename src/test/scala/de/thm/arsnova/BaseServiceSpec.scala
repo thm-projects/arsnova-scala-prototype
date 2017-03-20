@@ -1,16 +1,15 @@
-import services.BaseService
-import models.User
+package de.thm.arsnova
+
+import de.thm.arsnova.services.BaseService
+import de.thm.arsnova.models._
+import de.thm.arsnova.utils.{DatabaseConfig, MigrationConfig}
 
 import akka.event.{ NoLogging, LoggingAdapter }
-import utils.MigrationConfig
 import org.scalatest._
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import services.BaseService
-import models._
 import scala.language.existentials
 import org.scalatest.BeforeAndAfterEach
-import utils.DatabaseConfig
 
 class BaseServiceSpec extends FunSpec with Matchers with MigrationConfig with BeforeAndAfterAll with DatabaseConfig
   with BaseService with HateoasSpec with SessionApiSpec with QuestionApiSpec with FreetextAnswerApiSpec with ChoiceAnswerApiSpec with CommentApiSpec

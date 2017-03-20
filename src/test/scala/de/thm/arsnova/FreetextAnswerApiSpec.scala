@@ -1,27 +1,26 @@
+package de.thm.arsnova
+
+import de.thm.arsnova.services.{BaseService, SessionService}
+import de.thm.arsnova.models._
+import de.thm.arsnova.api.FreetextAnswerApi
+
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCode}
-import services.{BaseService, SessionService}
-import models._
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import models._
-import api.FreetextAnswerApi
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-
-import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.Matchers
-import services.BaseService
 import org.scalatest._
-import scala.concurrent.Await
+import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
 trait FreetextAnswerApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes
     with TestData with FreetextAnswerApi {
-  import mappings.FreetextAnswerJsonProtocol._
+  import de.thm.arsnova.mappings.FreetextAnswerJsonProtocol._
   describe("FreetextAnswer api") {
     it("retrieve freetext answers for question") {
       Get("/question/1/freetextAnswer") ~> freetextAnswerApi ~> check {

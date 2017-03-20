@@ -1,11 +1,13 @@
+package de.thm.arsnova
+
+import de.thm.arsnova.services.{BaseService, SessionService}
+import de.thm.arsnova.models._
+import de.thm.arsnova.api.SessionApi
+
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCode}
-import services.{BaseService, SessionService}
-import models._
-import api.SessionApi
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import models._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 
@@ -13,12 +15,11 @@ import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.Matchers
-import services.BaseService
 import org.scalatest._
 import akka.http.scaladsl.server.MissingQueryParamRejection
 
 trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes with TestData with SessionApi {
-  import mappings.SessionJsonProtocol._
+  import de.thm.arsnova.mappings.SessionJsonProtocol._
 
   describe("Session api") {
     it("retrieve sessions for user 1") {

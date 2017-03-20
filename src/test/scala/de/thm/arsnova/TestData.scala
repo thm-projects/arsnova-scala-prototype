@@ -1,4 +1,6 @@
-import models._
+package de.thm.arsnova
+
+import de.thm.arsnova.models._
 
 trait TestData {
   val FOUR = 4

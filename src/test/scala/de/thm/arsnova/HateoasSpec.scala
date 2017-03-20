@@ -1,16 +1,18 @@
+package de.thm.arsnova
+
+import de.thm.arsnova.services.BaseService
+import de.thm.arsnova.hateoas._
+import de.thm.arsnova.api._
+
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{FunSpec, Matchers}
 import org.scalatest.concurrent.ScalaFutures
 import spray.json._
-import services.BaseService
-import scala.concurrent.Future
-import scala.concurrent.Await
+import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.server.Route
-import hateoas._
-import api._
 
 trait HateoasSpec extends FunSpec with Matchers with ScalaFutures with BaseService with ScalatestRouteTest with Routes {
   import hateoas.LinkJsonProtocol._
