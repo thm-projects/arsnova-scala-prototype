@@ -4,7 +4,7 @@ name := "arsnova-3-backend"
 
 version := "0.0.1"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.11.8"
 
 enablePlugins(GatlingPlugin)
 
@@ -14,7 +14,7 @@ libraryDependencies ++= {
   val scalaTestVersion = "3.0.0"
   val scalaMockVersion = "3.2.2"
   val slickVersion = "3.2.0"
-  val gatlingVersion = "2.2.2"
+  val gatlingVersion = "2.2.4"
 
   Seq(
     "com.typesafe.akka"     %% "akka-actor"                           % akkaVersion,
