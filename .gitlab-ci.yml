@@ -10,6 +10,7 @@ variables:
   MYSQL_DATABASE: arsnova3
   MYSQL_ROOT_PASSWORD: arsnova3_prototype
   WAR_FILE: target/scala-2.11/ARSnova-*.jar
+  MIRROR_REPO: git@github.com:thm-projects/arsnova-3-backend.git
 
 stylecheck:
   stage: test
@@ -28,6 +29,17 @@ test:
   script:
     # Execute your project's tests
     - sbt clean test
+
+sync_mirror:
+  stage: synchronization
+  when: always
+  allow_failure: true
+  script:
+    - git clone --bare "$CI_BUILD_REPO" mirror.git
+    - cd mirror.git
+    - git update-ref -d refs/tags/production
+    - git update-ref -d refs/tags/staging
+    - git push --mirror "$MIRROR_REPO"
 
 package:
   stage: build
