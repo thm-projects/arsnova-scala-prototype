@@ -2,14 +2,14 @@ name := "ARSnova-prototype"
 
 version := "0.0.1"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 
 libraryDependencies ++= {
-  val akkaVersion = "2.4.8"
+  val akkaVersion = "2.4.17"
   val akkaHTTPVersion = "10.0.1"
   val scalaTestVersion = "3.0.0"
   val scalaMockVersion = "3.2.2"
-  val slickVersion = "3.1.1"
+  val slickVersion = "3.2.0"
 
   Seq(
     "com.typesafe.akka"     %% "akka-actor"                           % akkaVersion,
@@ -24,7 +24,6 @@ libraryDependencies ++= {
     "mysql"                 %  "mysql-connector-java"                 % "6.0.3",
     "org.flywaydb"          %  "flyway-core"                          % "3.2.1",
     "org.scalatest"         %% "scalatest"                            % scalaTestVersion
-//  "org.scalamock"         %% "scalamock-scalatest-support"          % scalaMockVersion
   )
 }
 
