@@ -56,7 +56,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       val content = "postContent"
       val variant = "preparation"
       val format = "freetext"
-      val newFreetext = Question(None, sessionId, subject, content, variant, format, None, None)
+      val newFreetext = Question(None, sessionId, subject, content, variant, format, None, None, true, true, false, true, true, None, None)
       val requestEntity = HttpEntity(MediaTypes.`application/json`,newFreetext.toJson.toString)
       Post("/question", requestEntity) ~> questionApi ~> check {
         response.status should be(OK)
@@ -76,7 +76,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       val variant = "preparation"
       val format = "flashcard"
       val backside = "backside"
-      val newFlashcard = Question(None, sessionId, subject, content, variant, format,
+      val newFlashcard = Question(None, sessionId, subject, content, variant, format, None, None, true, true, false, true, true,
         Some(FormatAttributes(Map("backside" -> "backside"))), None)
       val requestEntity = HttpEntity(MediaTypes.`application/json`, newFlashcard.toJson.toString)
       Post("/question", requestEntity) ~> questionApi ~> check {
@@ -97,7 +97,7 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
       val variant = "preparation"
       val format = "mc"
       val answerOptions = Seq(AnswerOption(None, None, false, "false", -1), AnswerOption(None, None, true, "true", 1))
-      val newMC = Question(None, sessionId, subject, content, variant, format,
+      val newMC = Question(None, sessionId, subject, content, variant, format, None, None, true, true, false, true, true,
         None, Some(answerOptions))
       val requestEntity = HttpEntity(MediaTypes.`application/json`, newMC.toJson.toString)
       Post("/question", requestEntity) ~> questionApi ~> check {

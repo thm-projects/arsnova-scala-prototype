@@ -46,11 +46,16 @@ trait SessionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseSe
       val newSessionShortTitle = "newShortTitle"
       val requestEntity = HttpEntity(MediaTypes.`application/json`,
         JsObject(
-          "key" -> JsString("55555555"),
+          "keyword" -> JsString("55555555"),
           "userId" -> JsNumber(testUsers.head.id.get),
           "title" -> JsString(newSessionTitle),
-          "shortTitle" -> JsString(newSessionShortTitle)
-        ).toString())
+          "shortName" -> JsString(newSessionShortTitle),
+          "lastOwnerActivity" -> JsString((System.currentTimeMillis / 1000).toString),
+          "creationTime" -> JsString((System.currentTimeMillis / 1000).toString),
+          "active" -> JsBoolean(true),
+          "feedbackLock" -> JsBoolean(false),
+          "flipFlashcards" -> JsBoolean(false)
+        ).toString)
       Post("/session", requestEntity) ~> sessionApi ~> check {
         response.status should be(OK)
         val newSessionId: Future[String] = Unmarshal(response.entity).to[String]

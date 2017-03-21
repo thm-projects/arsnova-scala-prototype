@@ -7,10 +7,15 @@ CREATE TABLE users (
 
 CREATE TABLE sessions (
   id INT NOT NULL AUTO_INCREMENT,
-  sessionkey VARCHAR(8) NOT NULL,
+  keyword VARCHAR(8) NOT NULL,
   user_id INT NOT NULL,
   title VARCHAR(255) NOT NULL,
-  short_title VARCHAR(255) NOT NULL,
+  short_name VARCHAR(255) NOT NULL,
+  last_owner_activity varchar(30) NOT NULL,
+  creation_time varchar(30) NOT NULL,
+  active TINYINT(1) NOT NULL DEFAULT 0,
+  feedback_lock TINYINT(1) NOT NULL DEFAULT 0,
+  flip_flashcards TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY(id),
   CONSTRAINT session_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=INNODB;
@@ -22,6 +27,13 @@ CREATE TABLE questions (
   content TEXT NOT NULL,
   variant VARCHAR(255) NOT NULL,
   format VARCHAR(255) NOT NULL,
+  hint TEXT,
+  solution TEXT,
+  active TINYINT(1) NOT NULL DEFAULT 0,
+  voting_disabled TINYINT(1) NOT NULL DEFAULT 1,
+  show_statistic TINYINT(1) NOT NULL DEFAULT 0,
+  show_answer TINYINT(1) NOT NULL DEFAULT 0,
+  abstention_allowed TINYINT(1) NOT NULL DEFAULT 1,
   format_attributes TEXT,
   PRIMARY KEY(id),
   CONSTRAINT question_session_fk FOREIGN KEY (session_id) REFERENCES sessions(id) ON UPDATE CASCADE ON DELETE CASCADE

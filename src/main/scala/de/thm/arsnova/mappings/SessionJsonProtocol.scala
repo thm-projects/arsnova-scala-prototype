@@ -4,5 +4,6 @@ import de.thm.arsnova.models.Session
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 object SessionJsonProtocol extends DefaultJsonProtocol {
-  implicit val sessionFormat: RootJsonFormat[Session] = jsonFormat5(Session)
+  import FeatureJsonProtocol._
+  implicit val sessionFormat: RootJsonFormat[Session] = jsonFormat11(Session)
 }

@@ -9,6 +9,13 @@ case class Question(
                      content: String,
                      variant: String,
                      format: String,
+                     hint: Option[String],
+                     solution: Option[String],
+                     active: Boolean,
+                     votingDisabled: Boolean,
+                     showStatistic: Boolean,
+                     showAnswer: Boolean,
+                     abstentionAllowed: Boolean,
                      formatAttributes: Option[FormatAttributes],
                      answerOptions: Option[Seq[AnswerOption]]
                    )
