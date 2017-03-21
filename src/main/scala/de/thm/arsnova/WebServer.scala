@@ -9,7 +9,7 @@ import de.thm.arsnova.utils.{MigrationConfig, Config}
 
 import scala.concurrent.ExecutionContext
 
-object WebServer extends App with Config with MigrationConfig with Routes with TestData {
+object WebServer extends App with Config with MigrationConfig with Routes {
   private implicit val system = ActorSystem()
   protected implicit val executor: ExecutionContext = system.dispatcher
   protected val log: LoggingAdapter = Logging(system, getClass)
