@@ -32,5 +32,5 @@ object QuestionJsonProtocol extends DefaultJsonProtocol {
   }
 
   // questin JSON protocol utilizes the above format. No need to manually do things here
-  implicit val questionFormat: RootJsonFormat[Question] = jsonFormat8(Question)
+  implicit val questionFormat: RootJsonFormat[Question] = jsonFormat15(Question)
 }

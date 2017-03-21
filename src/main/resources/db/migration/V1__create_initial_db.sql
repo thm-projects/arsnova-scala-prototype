@@ -27,6 +27,13 @@ CREATE TABLE questions (
   content TEXT NOT NULL,
   variant VARCHAR(255) NOT NULL,
   format VARCHAR(255) NOT NULL,
+  hint TEXT,
+  solution TEXT,
+  active TINYINT(1) NOT NULL DEFAULT 0,
+  voting_disabled TINYINT(1) NOT NULL DEFAULT 1,
+  show_statistic TINYINT(1) NOT NULL DEFAULT 0,
+  show_answer TINYINT(1) NOT NULL DEFAULT 0,
+  abstention_allowed TINYINT(1) NOT NULL DEFAULT 1,
   format_attributes TEXT,
   PRIMARY KEY(id),
   CONSTRAINT question_session_fk FOREIGN KEY (session_id) REFERENCES sessions(id) ON UPDATE CASCADE ON DELETE CASCADE

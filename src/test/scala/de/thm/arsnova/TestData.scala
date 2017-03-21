@@ -45,19 +45,19 @@ trait TestData {
   )
 
   val preparationQuestions = Seq(
-    Question(Some(1), 1, "subject1", "content1", "preparation", "freetext", None, None),
-    Question(Some(2), 1, "subject2", "content2", "preparation", "freetext", None, None),
-    Question(Some(3), 1, "subject3", "content3", "preparation", "flashcard",
+    Question(Some(1), 1, "subject1", "content1", "preparation", "freetext", None, None, true, true, false, true, true, None, None),
+    Question(Some(2), 1, "subject2", "content2", "preparation", "freetext", None, None, true, true, false, true, true, None, None),
+    Question(Some(3), 1, "subject3", "content3", "preparation", "flashcard", None, None, true, true, false, true, true,
       Some(FormatAttributes(Map("backside" -> "backside3"))), None),
-    Question(Some(FOUR), 1, "subject4", "content4", "preparation", "flashcard",
+    Question(Some(FOUR), 1, "subject4", "content4", "preparation", "flashcard", None, None, true, true, false, true, true,
       Some(FormatAttributes(Map("backside" -> "backside4"))), None),
-    Question(Some(FIVE), 1, "subject5", "content5", "preparation", "mc",
+    Question(Some(FIVE), 1, "subject5", "content5", "preparation", "mc", None, None, true, true, false, true, true,
       None, Some(testAnswerOptions))
   )
 
   val liveQuestions = Seq(
-    Question(Some(SIX), 1, "subject6", "content6", "live", "freetext", None, None),
-    Question(Some(SEVEN), 1, "subject7", "content7", "live", "flashcard",
+    Question(Some(SIX), 1, "subject6", "content6", "live", "freetext", None, None, true, true, false, true, true, None, None),
+    Question(Some(SEVEN), 1, "subject7", "content7", "live", "flashcard", None, None, true, true, false, true, true,
       Some(FormatAttributes(Map("backside" -> "backside7"))), None)
   )
 
