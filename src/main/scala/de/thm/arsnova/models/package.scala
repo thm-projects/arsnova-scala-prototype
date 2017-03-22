@@ -8,4 +8,6 @@ package object models {
   type ChoiceAnswerId = Long
   type CommentId = Long
   type FeaturesId = Long
+  type SessionMotdId = Long
+  type GlobalMotdId = Long
 }
