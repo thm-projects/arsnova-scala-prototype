@@ -5,7 +5,7 @@ import de.thm.arsnova.models.ChoiceAnswer
 import de.thm.arsnova.models.definitions._
 import slick.dbio.{Effect, NoStream}
 import slick.lifted.TableQuery
-import slick.profile.{FixedSqlAction, FixedSqlStreamingAction, SqlAction}
+import slick.sql.{FixedSqlAction, FixedSqlStreamingAction, SqlAction}
 import de.thm.arsnova.utils.DatabaseConfig
 
 import scala.concurrent.Future
