@@ -103,16 +103,6 @@ CREATE TABLE features (
 
 CREATE TABLE session_motds (
   id INT NOT NULL AUTO_INCREMENT,
-  startdate VARCHAR(30) NOT NULL,
-  enddate VARCHAR(30) NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  audience VARCHAR(255) NOT NULL,
-  PRIMARY KEY(id)
-) ENGINE=INNODB;
-
-CREATE TABLE global_motds (
-  id INT NOT NULL AUTO_INCREMENT,
   session_id INT NOT NULL,
   startdate VARCHAR(30) NOT NULL,
   enddate VARCHAR(30) NOT NULL,
@@ -120,4 +110,14 @@ CREATE TABLE global_motds (
   content TEXT NOT NULL,
   PRIMARY KEY(id),
   CONSTRAINT global_motd_session_fk FOREIGN KEY (session_id) REFERENCES sessions(id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=INNODB;
+
+CREATE TABLE global_motds (
+  id INT NOT NULL AUTO_INCREMENT,
+  startdate VARCHAR(30) NOT NULL,
+  enddate VARCHAR(30) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  audience VARCHAR(255) NOT NULL,
+  PRIMARY KEY(id)
 ) ENGINE=INNODB;
