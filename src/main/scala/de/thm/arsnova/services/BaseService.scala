@@ -19,6 +19,8 @@ trait BaseService extends DatabaseConfig {
   val choiceAnswersTable = TableQuery[ChoiceAnswersTable]
   val commentsTable = TableQuery[CommentsTable]
   val featuresTable = TableQuery[FeaturesTable]
+  val globalMotdsTable = TableQuery[GlobalMotdsTable]
+  val sessionMotdsTable = TableQuery[SessionMotdsTable]
 
   protected implicit def executeFromDb[A](action: SqlAction[A, NoStream, _ <: slick.dbio.Effect]): Future[A] = {
     db.run(action)
