@@ -4,5 +4,5 @@ import de.thm.arsnova.models.GlobalMotd
 import spray.json._
 
 object GlobalMotdJsonProtocol extends DefaultJsonProtocol {
-  implicit val commentFormat: RootJsonFormat[GlobalMotd] = jsonFormat6(GlobalMotd)
+  implicit val globalMotdFormat: RootJsonFormat[GlobalMotd] = jsonFormat6(GlobalMotd)
 }
