@@ -84,4 +84,16 @@ trait TestData {
     Comment(Some(2), 1, 1, true, "subject2", "text2", "1317574095000"),
     Comment(Some(3), 1, 1, true, "subject2", "text2", "1317574085000")
   )
+
+  val testSessionMotds = Seq(
+    SessionMotd(Some(1), 1, "1490181860", "1584057600", "session message", "The first test session message text"),
+    SessionMotd(Some(2), 1, "1490181860", "1584057600", "session message2", "The second test session message text")
+  )
+
+  val testGlobalMotds = Seq(
+    GlobalMotd(Some(1), "1490181860", "1584057600", "global message for all", "Global message text", "all"),
+    GlobalMotd(Some(2), "1490181860", "1584057600", "global message for loggedIn", "Global message text", "loggedIn"),
+    GlobalMotd(Some(2), "1490181860", "1584057600", "global message for students", "Global message text", "students"),
+    GlobalMotd(Some(3), "1490181860", "1584057600", "global message for tutors", "Global message text", "tutors")
+  )
 }
