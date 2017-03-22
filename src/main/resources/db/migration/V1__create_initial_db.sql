@@ -121,3 +121,13 @@ CREATE TABLE global_motds (
   audience VARCHAR(255) NOT NULL,
   PRIMARY KEY(id)
 ) ENGINE=INNODB;
+
+CREATE TABLE login_tokens (
+    token VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+    created VARCHAR(30) NOT NULL,
+    modified VARCHAR(30),
+    last_used VARCHAR(30) NOT NULL,
+    PRIMARY KEY(token),
+    CONSTRAINT login_token_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=INNODB;

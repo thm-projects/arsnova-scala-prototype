@@ -5,7 +5,7 @@ import de.thm.arsnova.models.ChoiceAnswer
 import de.thm.arsnova.models.definitions._
 import slick.dbio.{Effect, NoStream}
 import slick.lifted.TableQuery
-import slick.sql.{FixedSqlAction, FixedSqlStreamingAction, SqlAction}
+import slick.profile.{FixedSqlAction, FixedSqlStreamingAction, SqlAction}
 import de.thm.arsnova.utils.DatabaseConfig
 
 import scala.concurrent.Future
@@ -21,6 +21,7 @@ trait BaseService extends DatabaseConfig {
   val featuresTable = TableQuery[FeaturesTable]
   val globalMotdsTable = TableQuery[GlobalMotdsTable]
   val sessionMotdsTable = TableQuery[SessionMotdsTable]
+  val loginTokensTable = TableQuery[LoginTokensTable]
 
   protected implicit def executeFromDb[A](action: SqlAction[A, NoStream, _ <: slick.dbio.Effect]): Future[A] = {
     db.run(action)
