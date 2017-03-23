@@ -14,9 +14,6 @@ trait UserApi {
 
   val userApi = pathPrefix("") {
     pathEndOrSingleSlash {
-      get {
-        complete (UserService.findAll)
-      } ~
       post {
         entity(as[User]) { user =>
           complete (UserService.create(user).map(_.toJson))
