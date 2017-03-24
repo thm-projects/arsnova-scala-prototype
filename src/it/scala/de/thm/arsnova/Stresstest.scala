@@ -1,5 +1,7 @@
 package de.thm.arsnova
 
+import de.thm.arsnova.auditor.BasicAuditorSimulation
+
 import io.gatling.core.Predef._ // 2
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
@@ -21,10 +23,11 @@ class Stresstest extends Simulation {
 
   val uri1 = "http://localhost:9000/session/1"
 
-  val scn = scenario("BasicSimulation")
-    .exec(http("request_0")
-      .get("/session/1")
-      .headers(headers_0))
+  val auditorScn = scenario("Test").exec(
+    BasicAuditorSimulation.joinSession,
+    BasicAuditorSimulation.getAllPrepQuestions,
+    BasicAuditorSimulation.answerToMCQuestion
+  )
 
-  setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+  setUp(auditorScn.inject(atOnceUsers(1))).protocols(httpProtocol)
 }
