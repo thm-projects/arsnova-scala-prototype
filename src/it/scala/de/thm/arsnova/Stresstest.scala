@@ -24,10 +24,10 @@ class Stresstest extends Simulation {
   val uri1 = "http://localhost:9000/session/1"
 
   val auditorScn = scenario("Test").exec(
-    BasicAuditorSimulation.joinSession,
-    BasicAuditorSimulation.getAllPrepQuestions,
+    BasicAuditorSimulation.joinSession.pause(3),
+    BasicAuditorSimulation.getAllPrepQuestions.pause(3),
     BasicAuditorSimulation.answerToMCQuestion
   )
 
-  setUp(auditorScn.inject(atOnceUsers(1))).protocols(httpProtocol)
+  setUp(auditorScn.inject(atOnceUsers(1000))).protocols(httpProtocol)
 }
