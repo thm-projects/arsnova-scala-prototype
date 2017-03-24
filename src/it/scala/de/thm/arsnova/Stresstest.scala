@@ -35,7 +35,7 @@ class Stresstest extends Simulation {
   )
 
   setUp(
-    auditorScn.inject(atOnceUsers(1000)),
-    tutorScn.inject(atOnceUsers(100))
+    auditorScn.inject(rampUsers(1000) over (5 seconds)),
+    tutorScn.inject(rampUsers(100) over (5 seconds))
   ).protocols(httpProtocol)
 }
