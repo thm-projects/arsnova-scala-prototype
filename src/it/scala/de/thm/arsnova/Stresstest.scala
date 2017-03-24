@@ -1,6 +1,7 @@
 package de.thm.arsnova
 
 import de.thm.arsnova.auditor.BasicAuditorSimulation
+import de.thm.arsnova.tutor.BasicTutorSimulation
 
 import io.gatling.core.Predef._ // 2
 import io.gatling.http.Predef._
@@ -29,5 +30,12 @@ class Stresstest extends Simulation {
     BasicAuditorSimulation.answerToMCQuestion
   )
 
-  setUp(auditorScn.inject(atOnceUsers(1000))).protocols(httpProtocol)
+  val tutorScn = scenario("Basic Tutor").exec(
+    BasicTutorSimulation.createSession
+  )
+
+  setUp(
+    auditorScn.inject(atOnceUsers(1000)),
+    tutorScn.inject(atOnceUsers(100))
+  ).protocols(httpProtocol)
 }
