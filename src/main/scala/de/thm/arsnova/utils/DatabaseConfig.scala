@@ -5,7 +5,5 @@ trait DatabaseConfig extends Config{
 
   import driver.api._
 
-  def db: Database = Database.forConfig("database")
-
-  implicit val session: Session = db.createSession()
+  val db: Database = Database.forConfig("database")
 }
