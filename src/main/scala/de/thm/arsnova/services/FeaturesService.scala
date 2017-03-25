@@ -2,11 +2,12 @@ package de.thm.arsnova.services
 
 import de.thm.arsnova.models._
 import slick.driver.MySQLDriver.api._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 object FeaturesService extends BaseService {
+  import de.thm.arsnova.Context.executor
+
   def getById(featuresId: FeaturesId): Future[Features] = {
     featuresTable.filter(_.id === featuresId).result.head
   }
