@@ -3,9 +3,10 @@ package de.thm.arsnova.services
 import de.thm.arsnova.models.{UserId, Session, SessionId, Features}
 import slick.driver.MySQLDriver.api._
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
-object SessionService extends BaseService{
+object SessionService extends BaseService {
+  import de.thm.arsnova.Context.executor
+
   def findUserSessions(userId: UserId): Future[Seq[Session]] = {
     val resultTupleQry = for {
       sessions <- sessionsTable.filter(_.userId === userId)

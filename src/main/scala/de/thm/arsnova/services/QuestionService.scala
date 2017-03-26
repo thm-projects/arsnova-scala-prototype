@@ -3,10 +3,11 @@ package de.thm.arsnova.services
 import de.thm.arsnova.models._
 import slick.driver.MySQLDriver.api._
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 object QuestionService extends BaseService {
+  import de.thm.arsnova.Context.executor
+
   def findQuestionsBySessionIdAndVariant(sessionId: SessionId, variant: String): Future[Seq[Question]] = {
     db.run(questionsTable.filter(q => q.sessionId === sessionId && q.variant === variant).result).map(qSeq =>
       Future.traverse(qSeq) { q: Question => q.format match {

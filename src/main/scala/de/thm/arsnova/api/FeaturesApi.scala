@@ -4,7 +4,6 @@ import de.thm.arsnova.services.FeaturesService
 import de.thm.arsnova.models._
 import de.thm.arsnova.hateoas.{ApiRoutes, ResourceAdapter, Link}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.server.Directives._
 import spray.json._
@@ -14,6 +13,8 @@ import spray.json._
 The API Interface regarding session features.
  */
 trait FeaturesApi {
+  import de.thm.arsnova.Context.executor
+
   // protocol for serializing data
   import de.thm.arsnova.mappings.FeatureJsonProtocol._
 

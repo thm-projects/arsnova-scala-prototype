@@ -4,16 +4,13 @@ import akka.actor.ActorSystem
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import akka.stream.ActorMaterializer
 import de.thm.arsnova.utils.{MigrationConfig, Config}
 
 import scala.concurrent.ExecutionContext
 
 object WebServer extends App with Config with MigrationConfig with Routes {
-  private implicit val system = ActorSystem()
-  protected implicit val executor: ExecutionContext = system.dispatcher
+  import de.thm.arsnova.Context._
   protected val log: LoggingAdapter = Logging(system, getClass)
-  protected implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   if (args.contains("migrate")) {
     migrate
