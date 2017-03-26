@@ -31,7 +31,8 @@ class Stresstest extends Simulation {
   )
 
   val tutorScn = scenario("Basic Tutor").exec(
-    BasicTutorSimulation.createSession
+    BasicTutorSimulation.createSession.pause(3),
+    BasicTutorSimulation.createQuestion
   )
 
   setUp(
