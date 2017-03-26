@@ -2,41 +2,43 @@ package de.thm.arsnova.services
 
 import de.thm.arsnova.models._
 import slick.driver.MySQLDriver.api._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
 
 object QuestionService extends BaseService {
   import de.thm.arsnova.Context.executor
 
   def findQuestionsBySessionIdAndVariant(sessionId: SessionId, variant: String): Future[Seq[Question]] = {
-    db.run(questionsTable.filter(q => q.sessionId === sessionId && q.variant === variant).result).map(qSeq =>
-      Future.traverse(qSeq) { q: Question => q.format match {
-        case "mc" => {
-          AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a)))
+    val questionSeqFuture: Future[Seq[Question]] = db.run(questionsTable.filter(q => q.sessionId === sessionId && q.variant === variant).result)
+    questionSeqFuture.map((qSequence: Seq[Question]) =>
+      qSequence.map((q: Question) =>
+        q.format match {
+          case "mc" => Await.result(AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a))), 5.seconds)
+          case _ => q
         }
-        case _ => Future(q)
-      }}
-    ).flatMap(identity)
+      )
+    )
   }
 
   def findAllBySessionId(sessionId: SessionId): Future[Seq[Question]] = {
-    db.run(questionsTable.filter(_.sessionId === sessionId).result).map(qSeq =>
-      Future.traverse(qSeq) { q: Question => q.format match {
-        case "mc" => {
-          AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a)))
+    val questionSeqFuture: Future[Seq[Question]] = db.run(questionsTable.filter(_.sessionId === sessionId).result)
+    questionSeqFuture.map((qSequence: Seq[Question]) =>
+      qSequence.map((q: Question) =>
+        q.format match {
+          case "mc" => Await.result(AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a))), 5.seconds)
+          case _ => q
         }
-        case _ => Future(q)
-      }}
-    ).flatMap(identity)
+      )
+    )
   }
   def findById(questionId: QuestionId): Future[Question] = {
-    db.run(questionsTable.filter(_.id === questionId).result.head).map(q => q.format match {
-        case "mc" => {
-          AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a)))
-        }
-        case _ => Future(q)
+    val questionFuture: Future[Question] = db.run(questionsTable.filter(_.id === questionId).result.head)
+    questionFuture.map((q: Question) =>
+      q.format match {
+        case "mc" => Await.result(AnswerOptionService.findByQuestionId(q.id.get).map(a => q.copy(answerOptions = Some(a))), 5.seconds)
+        case _ => q
       }
-    ).flatMap(identity)
+    )
   }
   def create(newQuestion: Question): Future[QuestionId] = {
     newQuestion.format match {
