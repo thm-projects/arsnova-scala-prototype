@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 
-object BasicAuditorSimulation {
+object BasicAuditorScenario {
   import de.thm.arsnova.mappings.ChoiceAnswerJsonProtocol._
 
   val joinSession = exec(http("Auditor joins session")
@@ -25,4 +25,10 @@ object BasicAuditorSimulation {
     .post("/question/5/choiceAnswer")
     .header("Content-Type", "application/json")
     .body(StringBody(newAnswer.toJson.toString)).asJSON)
+
+  val scn = scenario("Test").exec(
+    joinSession.pause(3),
+    getAllPrepQuestions.pause(3),
+    answerToMCQuestion
+  )
 }

@@ -9,7 +9,7 @@ import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import java.util.Calendar
 
-object BasicTutorSimulation {
+object FlashcardTutorScenario {
   import de.thm.arsnova.mappings.QuestionJsonProtocol._
   import de.thm.arsnova.mappings.SessionJsonProtocol._
 
@@ -22,17 +22,20 @@ object BasicTutorSimulation {
     AnswerOption(None, None, false, "14", -10),
     AnswerOption(None, None, true, "thirteen", 10)
   )
-  val newMCQuestion = Question(None, 1, "new Question Subject", "This is an MC question for stress testing",
-      "preparation", "mc", Some("This is the hint!"), Some("The answer is 13"), true, false, true, true, false, None, Some(mcAnswerOptions))
 
-  val createSession = exec(http("Tutor creates session")
-    .post("/session/")
-    .header("Content-Type", "application/json")
-    .body(StringBody(newSession.toJson.toString)).asJSON)
+  val newMCQuestion = Question(None, 0, "new Question Subject", "This is an MC question for stress testing",
+    "preparation", "mc", Some("This is the hint!"), Some("The answer is 13"), true, false, true, true, false, None, Some(mcAnswerOptions))
 
-  val createQuestion = exec(http("Tutor creates mc question")
-    .post("/question/")
-    .header("Content-Type", "application/json")
-    .body(StringBody(newMCQuestion.toJson.toString)).asJSON
+  val scn = scenario("Flashcard Tutor").exec(
+    http("Tutor creates session")
+      .post("/session/")
+      .header("Content-Type", "application/json")
+      .body(StringBody(newSession.toJson.toString)).asJSON
+      .check(bodyString.saveAs("sessionId"))
+  ).pause(4).exec(
+    http("Tutor creates mc question")
+      .post("/session/${sessionId}/question")
+      .header("Content-Type", "application/json")
+      .body(StringBody(newMCQuestion.toJson.toString)).asJSON
   )
 }
