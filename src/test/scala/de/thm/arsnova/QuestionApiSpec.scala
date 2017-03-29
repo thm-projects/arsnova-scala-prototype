@@ -121,6 +121,22 @@ trait QuestionApiSpec extends FunSpec with Matchers with ScalaFutures with BaseS
         }
       }
     }
+    it("create question for session properly") {
+      val sessionId = 2
+      val newFreetext = Question(None, 0, "session question", "session question content", "preparation", "freetext",
+          None, None, true, true, false, true, true, None, None)
+      val requestEntity = HttpEntity(MediaTypes.`application/json`, newFreetext.toJson.toString)
+      Post(s"/session/${sessionId}/question", requestEntity) ~> questionApi ~> check {
+        response.status should be(OK)
+        val newQuestionId: Future[String] = Unmarshal(response.entity).to[String]
+        newQuestionId.onSuccess { case newId =>
+          val checkFreetext = newFreetext.copy(id = Some(newId.toLong), sessionId = sessionId)
+          Get("/question/" + newId.toString) ~> questionApi ~> check {
+            responseAs[JsObject] should be(questionAdapter.toResource(checkFreetext.asInstanceOf[Question]))
+          }
+        }
+      }
+    }
     it("update answer options properly") {
       val question = preparationQuestions.last
       val updatedAnswerOptions: Seq[AnswerOption] = question.answerOptions.get

@@ -64,5 +64,28 @@ trait QuestionApi {
         }
       }
     }
+  } ~
+  pathPrefix(ApiRoutes.getRoute("session")) {
+    pathPrefix(IntNumber) { sessionId =>
+      pathPrefix(ApiRoutes.getRoute("question")) {
+        pathEndOrSingleSlash {
+          get {
+            parameters("variant".?) { variant =>
+              variant match {
+                case Some(v) => complete(QuestionService.findQuestionsBySessionIdAndVariant(sessionId, v)
+                  .map(questionAdapter.toResources(_)))
+                case None => complete {QuestionService.findAllBySessionId(sessionId)
+                  .map(questionAdapter.toResources(_))}
+              }
+            }
+          } ~
+          post {
+            entity(as[Question]) { question =>
+              complete (QuestionService.create(question.copy(sessionId = sessionId)).map(_.toJson))
+            }
+          }
+        }
+      }
+    }
   }
 }
