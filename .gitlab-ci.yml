@@ -11,7 +11,7 @@ variables:
   MYSQL_DATABASE: arsnova3
   MYSQL_ROOT_PASSWORD: arsnova3_prototype
   WAR_FILE: target/scala-2.11/arsnova-3-backend*.jar
-  MIRROR_REPO: git@github.com:thm-projects/arsnova-3-backend.git
+  MIRROR_REPO: git@github.com:thm-projects/arsnova-scala-prototype.git
   REPORT_DIR: target/gatling-it/stresstest*
 
 stylecheck:
